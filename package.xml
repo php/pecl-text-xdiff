@@ -30,8 +30,10 @@
    <file role="src" name="config.m4"/>
    <file role="src" name="xdiff.c"/>
    <file role="src" name="php_xdiff.h"/>
+   <file role="src" name="package.xml"/>
    
    <file role="doc" name="CREDITS"/>
+   <file role="doc" name="README.API"/>
    
    <file role="test" name="tests/001.phpt"/>
    <file role="test" name="tests/002.phpt"/>
