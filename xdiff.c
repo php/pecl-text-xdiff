@@ -52,6 +52,26 @@ static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemit
 static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error TSRMLS_DC);
 static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error);
 
+#ifdef HAVE_XDL_SET_ALLOCATOR
+/* These are needed to avoid compilation error */
+static void *xdiff_malloc(unsigned int size)
+{
+	return emalloc(size);	
+}
+
+static void xdiff_free(void *ptr)
+{
+	efree(ptr);	
+}
+
+static void *xdiff_realloc(void *ptr, unsigned int nsize)
+{
+	return erealloc(ptr, nsize);	
+}
+
+static memallocator_t allocator = { xdiff_malloc, xdiff_free, xdiff_realloc };
+#endif
+
 /* {{{ xdiff_functions[]
  *
  * Every user visible function must have an entry in xdiff_functions[].
@@ -85,7 +105,7 @@ zend_module_entry xdiff_module_entry = {
 	NULL,
 	PHP_MINFO(xdiff),
 #if ZEND_MODULE_API_NO >= 20010901
-	"0.3", /* Replace with version number for your extension */
+	"1.0", /* Replace with version number for your extension */
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
@@ -99,6 +119,10 @@ ZEND_GET_MODULE(xdiff)
  */
 PHP_MINIT_FUNCTION(xdiff)
 {
+#ifdef HAVE_XDL_SET_ALLOCATOR
+	xdl_set_allocator(&allocator);
+#endif
+
 	REGISTER_LONG_CONSTANT("XDIFF_PATCH_NORMAL", XDL_PATCH_NORMAL, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("XDIFF_PATCH_REVERSE", XDL_PATCH_REVERSE, CONST_CS | CONST_PERSISTENT);
 	
@@ -112,6 +136,11 @@ PHP_MINFO_FUNCTION(xdiff)
 {
 	php_info_print_table_start();
 	php_info_print_table_row(2, "xdiff support", "enabled");
+#ifdef HAVE_XDL_SET_ALLOCATOR
+	php_info_print_table_row(2, "memory limit", "supported (libxdiff version >= 0.6)");
+#else
+	php_info_print_table_row(2, "memory limit", "not supported (libxdiff version < 0.6)");
+#endif
 	php_info_print_table_end();
 }
 /* }}} */

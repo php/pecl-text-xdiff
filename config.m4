@@ -42,5 +42,15 @@ if test "$PHP_XDIFF" != "no"; then
   ])
   PHP_SUBST(XDIFF_SHARED_LIBADD)
 
+  LIBNAME=xdiff
+  LIBSYMBOL=xdl_set_allocator
+
+  PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
+  [
+    AC_DEFINE(HAVE_XDL_SET_ALLOCATOR,1,[ ])
+  ],[   ],[
+    -L$XDIFF_DIR/lib
+  ])
+  
   PHP_NEW_EXTENSION(xdiff, xdiff.c, $ext_shared)
 fi
