@@ -35,16 +35,19 @@ extern zend_module_entry xdiff_module_entry;
 #endif
 
 PHP_MINIT_FUNCTION(xdiff);
-PHP_MSHUTDOWN_FUNCTION(xdiff);
-PHP_RINIT_FUNCTION(xdiff);
-PHP_RSHUTDOWN_FUNCTION(xdiff);
 PHP_MINFO_FUNCTION(xdiff);
 
-PHP_FUNCTION(xdiff_compare);
-PHP_FUNCTION(xdiff_patch);
-PHP_FUNCTION(xdiff_merge3);
-PHP_FUNCTION(xdiff_bcompare);
-PHP_FUNCTION(xdiff_bpatch);
+PHP_FUNCTION(xdiff_file_diff);
+PHP_FUNCTION(xdiff_file_diff_binary);
+PHP_FUNCTION(xdiff_file_patch);
+PHP_FUNCTION(xdiff_file_patch_binary);
+PHP_FUNCTION(xdiff_file_merge3);
+
+PHP_FUNCTION(xdiff_string_diff);
+PHP_FUNCTION(xdiff_string_diff_binary);
+PHP_FUNCTION(xdiff_string_patch);
+PHP_FUNCTION(xdiff_string_patch_binary);
+PHP_FUNCTION(xdiff_string_merge3);
 
 #endif	/* PHP_XDIFF_H */
 
