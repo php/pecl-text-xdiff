@@ -17,11 +17,11 @@
  </maintainers>
 
  <release>
-  <version>1.0</version>
-  <date>2004-02-09</date>
+  <version>1.1</version>
+  <date>2004-03-21</date>
   <state>stable</state>
   <notes>
-   Add support to memory_limit (libxdiff >= 0.6 required).
+   Fix FreeBSD build.
   </notes>
   <configureoptions>
     <configureoption name="with-xdiff" default="autodetect" prompt="libxdiff library installation dir?"/>
