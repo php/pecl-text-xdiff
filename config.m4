@@ -28,6 +28,11 @@ if test "$PHP_XDIFF" != "no"; then
 
   PHP_ADD_INCLUDE($XDIFF_DIR/include)
 
+  EXTRA_LIBS="-lm"
+  AC_CHECK_LIB(dl, dlopen, [
+    EXTRA_LIBS="$EXTRA_LIBS -ldl"
+  ])
+
   LIBNAME=xdiff 
   LIBSYMBOL=xdl_diff
 
@@ -38,7 +43,7 @@ if test "$PHP_XDIFF" != "no"; then
   ],[
     AC_MSG_ERROR([wrong xdiff lib version or lib not found])
   ],[
-    -L$XDIFF_DIR/lib -lm -ldl
+    -L$XDIFF_DIR/lib $EXTRA_LIBS
   ])
   PHP_SUBST(XDIFF_SHARED_LIBADD)
 
