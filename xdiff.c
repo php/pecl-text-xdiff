@@ -84,9 +84,9 @@ function_entry xdiff_functions[] = {
 	PHP_FE(xdiff_file_merge3,		NULL)
 	PHP_FE(xdiff_string_diff,		NULL)
 	PHP_FE(xdiff_string_diff_binary,	NULL)
-	PHP_FE(xdiff_string_patch,		NULL)
+	PHP_FE(xdiff_string_patch,		fourth_arg_force_ref)
 	PHP_FE(xdiff_string_patch_binary,	NULL)
-	PHP_FE(xdiff_string_merge3,		NULL)	
+	PHP_FE(xdiff_string_merge3,		fourth_arg_force_ref)	
 	{NULL, NULL, NULL}
 };
 /* }}} */
