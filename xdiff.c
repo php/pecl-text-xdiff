@@ -225,7 +225,7 @@ PHP_FUNCTION(xdiff_file_diff)
 		php_stream_close(output_stream);
 		RETURN_FALSE;
 	}
-
+	php_stream_close(output_stream);
 	RETURN_TRUE;	
 }
 /* }}} */
@@ -288,7 +288,7 @@ PHP_FUNCTION(xdiff_file_diff_binary)
 		php_stream_close(output_stream);
 		RETURN_FALSE;
 	}
-
+	php_stream_close(output_stream);
 	RETURN_TRUE;	
 }
 /* }}} */
@@ -347,7 +347,6 @@ PHP_FUNCTION(xdiff_file_patch)
 PHP_FUNCTION(xdiff_string_patch)
 {
 	zval *error_ref = NULL;
-	php_stream *output_stream;
 	char *src, *patch;
 	int retval, size1, size2, flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
 	xdemitcb_t output, error_output;
@@ -648,6 +647,7 @@ static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size)
 	for (i = 0; i < array_size; i++) {
 		php_stream_write(stream, buffer[i].ptr, buffer[i].size);
 	}
+	return 1;
 }
 
 static int init_string(struct string_buffer *string)
