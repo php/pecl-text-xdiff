@@ -17,11 +17,11 @@
  </maintainers>
 
  <release>
-  <version>0.2</version>
-  <date>2004-01-08</date>
+  <version>0.3</version>
+  <date>2004-01-10</date>
   <state>alpha</state>
   <notes>
-   Initial release.
+   Win32 build fixes.
   </notes>
   <configureoptions>
     <configureoption name="with-xdiff" default="autodetect" prompt="libxdiff library installation dir?"/>
@@ -30,7 +30,6 @@
    <file role="src" name="config.m4"/>
    <file role="src" name="xdiff.c"/>
    <file role="src" name="php_xdiff.h"/>
-   <file role="src" name="package.xml"/>
    
    <file role="doc" name="CREDITS"/>
    <file role="doc" name="README.API"/>
