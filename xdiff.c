@@ -378,7 +378,7 @@ PHP_FUNCTION(xdiff_file_patch_binary)
 }
 /* }}} */
 
-/* {{{ proto string xdiff_string_patch_binary(string file, string patch)
+/* {{{ proto string xdiff_string_patch_binary(string str, string patch)
  */
 PHP_FUNCTION(xdiff_string_patch_binary)
 {
@@ -410,7 +410,7 @@ PHP_FUNCTION(xdiff_string_patch_binary)
 }
 /* }}} */
 
-/* {{{ proto string xdiff_file_merge3(string file1, string file2, string file3, string dest)
+/* {{{ proto mixed xdiff_file_merge3(string file1, string file2, string file3, string dest)
  */
 PHP_FUNCTION(xdiff_file_merge3)
 {
@@ -459,7 +459,7 @@ PHP_FUNCTION(xdiff_file_merge3)
 }
 /* }}} */
 
-/* {{{ proto string xdiff_string_merge3(string file1, string file2, string file3 [, string error])
+/* {{{ proto string xdiff_string_merge3(string str1, string str2, string str3 [, string error])
  */
 PHP_FUNCTION(xdiff_string_merge3)
 {
