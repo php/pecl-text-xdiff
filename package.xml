@@ -17,11 +17,11 @@
  </maintainers>
 
  <release>
-  <version>1.1</version>
-  <date>2004-03-21</date>
+  <version>1.2</version>
+  <date>2004-11-09</date>
   <state>stable</state>
   <notes>
-   Fix FreeBSD build.
+   Fix libxdiff 0.9 crash. Force last parameters of xdiff_string_patch and xdiff_string_merge3 to be passed by reference.
   </notes>
   <configureoptions>
     <configureoption name="with-xdiff" default="autodetect" prompt="libxdiff library installation dir?"/>

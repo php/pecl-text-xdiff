@@ -57,5 +57,21 @@ if test "$PHP_XDIFF" != "no"; then
     -L$XDIFF_DIR/lib
   ])
   
+  dnl
+  dnl Check for xdiff 0.9 or greater availability
+  dnl
+  old_CPPFLAGS=$CPPFLAGS
+  CPPFLAGS=-I$XDIFF_DIR
+  AC_TRY_COMPILE([
+#include <xdiff.h>
+#include <stdlib.h>
+  ], [
+memallocator_t a;
+a.priv = NULL;
+  ], [
+    AC_DEFINE(HAVE_XDL_ALLOCATOR_PRIV, 1, [ ])
+  ])
+  CPPFLAGS=$old_CPPFLAGS
+
   PHP_NEW_EXTENSION(xdiff, xdiff.c, $ext_shared)
 fi

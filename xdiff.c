@@ -53,6 +53,27 @@ static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemit
 static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error);
 
 #ifdef HAVE_XDL_SET_ALLOCATOR
+
+#ifdef HAVE_XDL_ALLOCATOR_PRIV
+/* These are needed to avoid compilation error */
+static void *xdiff_malloc(void *foo, unsigned int size)
+{
+	return emalloc(size);	
+}
+
+static void xdiff_free(void *foo, void *ptr)
+{
+	efree(ptr);	
+}
+
+static void *xdiff_realloc(void *foo, void *ptr, unsigned int nsize)
+{
+	return erealloc(ptr, nsize);	
+}
+
+static memallocator_t allocator = { NULL, xdiff_malloc, xdiff_free, xdiff_realloc };
+
+#else
 /* These are needed to avoid compilation error */
 static void *xdiff_malloc(unsigned int size)
 {
@@ -70,7 +91,8 @@ static void *xdiff_realloc(void *ptr, unsigned int nsize)
 }
 
 static memallocator_t allocator = { xdiff_malloc, xdiff_free, xdiff_realloc };
-#endif
+#endif	/* HAVE_XDL_ALLOCATOR_PRIV */
+#endif	/* HAVE_XDL_SET_ALLOCATOR */
 
 /* {{{ xdiff_functions[]
  *
@@ -105,7 +127,7 @@ zend_module_entry xdiff_module_entry = {
 	NULL,
 	PHP_MINFO(xdiff),
 #if ZEND_MODULE_API_NO >= 20010901
-	"1.1", /* Replace with version number for your extension */
+	"1.2", /* Replace with version number for your extension */
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
