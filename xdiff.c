@@ -85,7 +85,7 @@ zend_module_entry xdiff_module_entry = {
 	NULL,
 	PHP_MINFO(xdiff),
 #if ZEND_MODULE_API_NO >= 20010901
-	"0.2", /* Replace with version number for your extension */
+	"0.3", /* Replace with version number for your extension */
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
