@@ -1,8 +1,8 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 4                                                        |
+  | PHP Version 5                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2003 The PHP Group                                |
+  | Copyright (c) 1997-2004 The PHP Group                                |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.02 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -22,7 +22,7 @@
 #define PHP_XDIFF_H
 
 extern zend_module_entry xdiff_module_entry;
-#define phpext_xdiff_ptr &diff_module_entry
+#define phpext_xdiff_ptr &xdiff_module_entry
 
 #ifdef PHP_WIN32
 #define PHP_XDIFF_API __declspec(dllexport)

@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_WITH("xdiff", "libxdiff support", "no");
+
+if (PHP_XDIFF != "no") {
+	if (CHECK_LIB("xdiff.lib", "xdiff", PHP_XDIFF + ";..\\libxdiff-*") &&
+			CHECK_HEADER_ADD_INCLUDE("xdiff.h", "CFLAGS_XDIFF", PHP_XDIFF + ";..\\libxdiff-*\\xdiff")) {
+		EXTENSION("xdiff", "xdiff.c");
+	} else {
+		WARNING("did not find xdiff includes/libs");
+	}
+}

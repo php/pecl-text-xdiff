@@ -1,8 +1,8 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 4                                                        |
+  | PHP Version 5                                                        |
   +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2003 The PHP Group                                |
+  | Copyright (c) 1997-2004 The PHP Group                                |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.02 of the PHP license,      |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -34,22 +34,22 @@ struct string_buffer {
 	unsigned long size;	
 };
 
-static int load_mm_file(const char *filepath, mmfile_t *dest);
+static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC);
 static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *dest);
 static int append_string(void *ptr, mmbuffer_t *buffer, int array_size);
 static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size);
 static int init_string(struct string_buffer *string);
 static void free_string(struct string_buffer *string);
 
-static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal);
+static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal TSRMLS_DC);
 static int make_diff_str(char *str1, int size1, char *str2, int size2,  xdemitcb_t *output, int context, int minimal);
-static int make_bdiff(char *filepath1, char *filepath2, xdemitcb_t *output);
+static int make_bdiff(char *filepath1, char *filepath2, xdemitcb_t *output TSRMLS_DC);
 static int make_bdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output);
-static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xdemitcb_t *error, int flags);
+static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xdemitcb_t *error, int flags TSRMLS_DC);
 static int make_patch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output, xdemitcb_t *error, int flags);
-static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output);
+static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output TSRMLS_DC);
 static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output);
-static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error);
+static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error TSRMLS_DC);
 static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error);
 
 /* {{{ xdiff_functions[]
@@ -169,9 +169,9 @@ PHP_FUNCTION(xdiff_file_diff)
 	output.priv = output_stream;
 	output.outf = append_stream;
 	
-	retval = make_diff(filepath1, filepath2, &output, context, minimal);
+	retval = make_diff(filepath1, filepath2, &output, context, minimal TSRMLS_CC);
 	if (!retval) {
-		php_close_stream(output_stream);
+		php_stream_close(output_stream);
 		RETURN_FALSE;
 	}
 
@@ -232,9 +232,9 @@ PHP_FUNCTION(xdiff_file_diff_binary)
 	output.priv = output_stream;
 	output.outf = append_stream;
 	
-	retval = make_bdiff(filepath1, filepath2, &output);
+	retval = make_bdiff(filepath1, filepath2, &output TSRMLS_CC);
 	if (!retval) {
-		php_close_stream(output_stream);
+		php_stream_close(output_stream);
 		RETURN_FALSE;
 	}
 
@@ -273,7 +273,7 @@ PHP_FUNCTION(xdiff_file_patch)
 	error_output.priv= &error_string;
 	error_output.outf = append_string;
 	
-	retval = make_patch(src_path, patch_path, &output, &error_output, flags);
+	retval = make_patch(src_path, patch_path, &output, &error_output, flags TSRMLS_CC);
 	php_stream_close(output_stream);
 	
 	if (retval < 0) {
@@ -323,7 +323,7 @@ PHP_FUNCTION(xdiff_string_patch)
 	error_output.priv= &error_string;
 	error_output.outf = append_string;
 
-	retval = make_patch_str(src, size1, patch, size2, &output, &error_output, flags);	
+	retval = make_patch_str(src, size1, patch, size2, &output, &error_output, flags);
 	if (retval < 0) {
 		free_string(&error_string);
 		free_string(&output_string);
@@ -367,7 +367,7 @@ PHP_FUNCTION(xdiff_file_patch_binary)
 	output.outf = append_stream;
 	output.priv = output_stream;
 	
-	retval = make_bpatch(src_path, patch_path, &output);
+	retval = make_bpatch(src_path, patch_path, &output TSRMLS_CC);
 	php_stream_close(output_stream);
 	
 	if (retval < 0) {
@@ -441,7 +441,7 @@ PHP_FUNCTION(xdiff_file_merge3)
 	error_output.priv = &string;
 	error_output.outf = append_string;
 	
-	retval = make_merge3(file1, file2, file3, &output, &error_output);
+	retval = make_merge3(file1, file2, file3, &output, &error_output TSRMLS_CC);
 	php_stream_close(output_stream);
 	
 	if (!retval) {
@@ -514,7 +514,7 @@ PHP_FUNCTION(xdiff_string_merge3)
 }
 /* }}} */
 
-static int load_mm_file(const char *filepath, mmfile_t *dest)
+static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC)
 {
 	int retval;
 	off_t filesize;
@@ -592,6 +592,7 @@ static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size)
 {
 	php_stream *stream = ptr;
 	unsigned int i;
+	TSRMLS_FETCH();
 	
 	for (i = 0; i < array_size; i++) {
 		php_stream_write(stream, buffer[i].ptr, buffer[i].size);
@@ -615,19 +616,19 @@ static void free_string(struct string_buffer *string)
 	efree(string->ptr);
 }
 
-static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal)
+static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal TSRMLS_DC)
 {
 	mmfile_t file1, file2;
 	xpparam_t params;
 	xdemitconf_t conf;
 	int retval;
 	
-	retval = load_mm_file(filepath1, &file1);
+	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
 	if (!retval) {
 		return 0;
 	}
 	
-	retval = load_mm_file(filepath2, &file2);
+	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
 	if (!retval) {
 		xdl_free_mmfile(&file1);
 		return 0;
@@ -679,18 +680,18 @@ static int make_diff_str(char *str1, int size1, char *str2, int size2, xdemitcb_
 	return 1;
 }
 
-static int make_bdiff(char *filepath1, char *filepath2, xdemitcb_t *output)
+static int make_bdiff(char *filepath1, char *filepath2, xdemitcb_t *output TSRMLS_DC)
 {
 	mmfile_t file1, file2;
 	bdiffparam_t params;
 	int retval;
 	
-	retval = load_mm_file(filepath1, &file1);
+	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
 	if (!retval) {
 		return 0;
 	}
 	
-	retval = load_mm_file(filepath2, &file2);
+	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
 	if (!retval) {
 		xdl_free_mmfile(&file1);
 		return 0;
@@ -739,17 +740,17 @@ static int make_bdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb
 	return 1;
 }
 
-static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xdemitcb_t *error, int flags)
+static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xdemitcb_t *error, int flags TSRMLS_DC)
 {
 	int retval;
 	mmfile_t file, patch;
 	
-	retval = load_mm_file(file_path, &file);
+	retval = load_mm_file(file_path, &file TSRMLS_CC);
 	if (!retval) {
 		return 0;
 	}
 	
-	retval = load_mm_file(patch_path, &patch);
+	retval = load_mm_file(patch_path, &patch TSRMLS_CC);
 	if (!retval) {
 		xdl_free_mmfile(&file);
 		return 0;
@@ -793,17 +794,17 @@ static int make_patch_str(char *file, int size1, char *patch, int size2, xdemitc
 	return 1;
 }
 
-static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output)
+static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output TSRMLS_DC)
 {
 	int retval;
 	mmfile_t file_mm, patch_mm;
 	
-	retval = load_mm_file(file_path, &file_mm);
+	retval = load_mm_file(file_path, &file_mm TSRMLS_CC);
 	if (!retval) {
 		return 0;
 	}
 	
-	retval = load_mm_file(patch_path, &patch_mm);
+	retval = load_mm_file(patch_path, &patch_mm TSRMLS_CC);
 	if (!retval) {
 		xdl_free_mmfile(&file_mm);
 		return 0;
@@ -847,23 +848,23 @@ static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemit
 	return 1;
 }
 
-static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error)
+static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error TSRMLS_DC)
 {
 	int retval;
 	mmfile_t file1, file2, file3;
 	
-	retval = load_mm_file(filepath1, &file1);
+	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
 	if (!retval) {
 		return 0;	
 	}
 	
-	retval = load_mm_file(filepath2, &file2);
+	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
 	if (!retval) {
 		xdl_free_mmfile(&file1);
 		return 0;
 	}
 	
-	retval = load_mm_file(filepath3, &file3);
+	retval = load_mm_file(filepath3, &file3 TSRMLS_CC);
 	if (!retval) {
 		xdl_free_mmfile(&file1);
 		xdl_free_mmfile(&file2);

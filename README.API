@@ -4,19 +4,22 @@ API:
 
 * mixed xdiff_string_diff(string str1, string str2, [int context, [bool minimal]])
 
-Makes unified diff of strings str1 and str2. 'context' indicates how many lines of context you want
-to include in diff result. Set 'minimal' to true if you want to minimalize size of diff (can take a long time).
-Returns string with result or false if an internal error happened.
+Makes unified diff of strings str1 and str2. 'context' indicates how many
+lines of context you want to include in diff result. Set 'minimal' to true if
+you want to minimalize size of diff (can take a long time).  Returns string
+with result or false if an internal error happened.
 
 * bool xdiff_file_diff(string file1, string file2, string dest, [int context, [bool minimal]])
 
-Makes unified diff of files file1 and file2 and stores result in file dest. 'context' indicates how many lines of context you want
-to include in diff result. Set 'minimal' to true if you want to minimalize size of diff (can take a long time).
+Makes unified diff of files file1 and file2 and stores result in file dest.
+'context' indicates how many lines of context you want to include in diff
+result. Set 'minimal' to true if you want to minimalize size of diff (can take
+a long time).
 
 * mixed xdiff_string_diff_binary(string str1, string str2)
 
-Makes binary diff of strings str1 and str2.
-Returns string with result or false if an internal error happened.
+Makes binary diff of strings str1 and str2.  Returns string with result or
+false if an internal error happened.
 
 * bool xdiff_file_diff_binary(string file1, string file2, string dest)
 
@@ -39,8 +42,8 @@ Patches file 'file' with unified patch in file 'patch'.
 XDIFF_PATCH_NORMAL - normal patch (default)
 XDIFF_PATCH_REVERSE - reverse patch
 
-Returns false if an internal error happened, string with rejected chunks of patch or true if patch was applied
-successfully.
+Returns false if an internal error happened, string with rejected chunks of
+patch or true if patch was applied successfully.
 
 * string xdiff_string_patch_binary(string str, string patch)
 
@@ -54,11 +57,15 @@ Returns true if file was patched successfully, false otherwise.
 
 * string xdiff_string_merge3(string str1, string str2, string str3 [, string error])
 
-Merges strings 'str1', 'str2' and 'str3' into one. Returns merged string or false if an internal error happened.
-If 'error' is passed then error is stored inside this variable (it is passed by reference).
+Merges strings 'str1', 'str2' and 'str3' into one. Returns merged string or
+false if an internal error happened.  If 'error' is passed then error is
+stored inside this variable (it is passed by reference).
 
 * mixed xdiff_file_merge3(string file1, string file2, string file3, string dest)
 
-Merges files 'file1', 'file2' and 'file3' into one and stores result in file 'dest'.
-Returns true if merge was successful, string with rejected chunks if it was not or false if an internal error happened.
+Merges files 'file1', 'file2' and 'file3' into one and stores result in file
+'dest'.  Returns true if merge was successful, string with rejected chunks if
+it was not or false if an internal error happened.
 
+
+vim:tw=78:et:
