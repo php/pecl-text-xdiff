@@ -17,11 +17,11 @@
  </maintainers>
 
  <release>
-  <version>0.3</version>
-  <date>2004-01-10</date>
-  <state>alpha</state>
+  <version>1.0</version>
+  <date>2004-02-09</date>
+  <state>stable</state>
   <notes>
-   Win32 build fixes.
+   Add support to memory_limit (libxdiff >= 0.6 required).
   </notes>
   <configureoptions>
     <configureoption name="with-xdiff" default="autodetect" prompt="libxdiff library installation dir?"/>
