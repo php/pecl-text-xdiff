@@ -34,6 +34,18 @@ struct string_buffer {
 	unsigned long size;	
 };
 
+#ifdef ZEND_ENGINE_2
+static
+    ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref, 0)
+        ZEND_ARG_PASS_INFO(0)
+        ZEND_ARG_PASS_INFO(0)
+        ZEND_ARG_PASS_INFO(0)
+        ZEND_ARG_PASS_INFO(1)
+    ZEND_END_ARG_INFO()
+#else
+static unsigned char fourth_arg_force_ref[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+#endif
+
 static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC);
 static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *dest);
 static int append_string(void *ptr, mmbuffer_t *buffer, int array_size);
