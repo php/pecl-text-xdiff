@@ -139,7 +139,7 @@ zend_module_entry xdiff_module_entry = {
 	NULL,
 	PHP_MINFO(xdiff),
 #if ZEND_MODULE_API_NO >= 20010901
-	"1.2", /* Replace with version number for your extension */
+	"1.3", /* Replace with version number for your extension */
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
