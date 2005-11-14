@@ -36,14 +36,14 @@ struct string_buffer {
 
 #ifdef ZEND_ENGINE_2
 static
-    ZEND_BEGIN_ARG_INFO(fourth_arg_force_ref, 0)
+    ZEND_BEGIN_ARG_INFO(xdiff_arg_force_ref, 0)
         ZEND_ARG_PASS_INFO(0)
         ZEND_ARG_PASS_INFO(0)
         ZEND_ARG_PASS_INFO(0)
         ZEND_ARG_PASS_INFO(1)
     ZEND_END_ARG_INFO()
 #else
-static unsigned char fourth_arg_force_ref[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+static unsigned char xdiff_arg_force_ref[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 #endif
 
 static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC);
@@ -118,9 +118,9 @@ function_entry xdiff_functions[] = {
 	PHP_FE(xdiff_file_merge3,		NULL)
 	PHP_FE(xdiff_string_diff,		NULL)
 	PHP_FE(xdiff_string_diff_binary,	NULL)
-	PHP_FE(xdiff_string_patch,		fourth_arg_force_ref)
+	PHP_FE(xdiff_string_patch,		xdiff_arg_force_ref)
 	PHP_FE(xdiff_string_patch_binary,	NULL)
-	PHP_FE(xdiff_string_merge3,		fourth_arg_force_ref)	
+	PHP_FE(xdiff_string_merge3,		xdiff_arg_force_ref)	
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -139,7 +139,7 @@ zend_module_entry xdiff_module_entry = {
 	NULL,
 	PHP_MINFO(xdiff),
 #if ZEND_MODULE_API_NO >= 20010901
-	"1.3", /* Replace with version number for your extension */
+	"1.4", /* Replace with version number for your extension */
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
