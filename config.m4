@@ -61,7 +61,7 @@ if test "$PHP_XDIFF" != "no"; then
   dnl Check for xdiff 0.9 or greater availability
   dnl
   old_CPPFLAGS=$CPPFLAGS
-  CPPFLAGS=-I$XDIFF_DIR
+  CPPFLAGS=-I$XDIFF_DIR/include
   AC_TRY_COMPILE([
 #include <xdiff.h>
 #include <stdlib.h>
