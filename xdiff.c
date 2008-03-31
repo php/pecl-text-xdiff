@@ -139,7 +139,7 @@ zend_module_entry xdiff_module_entry = {
 	NULL,
 	PHP_MINFO(xdiff),
 #if ZEND_MODULE_API_NO >= 20010901
-	"1.4", /* Replace with version number for your extension */
+	PHP_XDIFF_VERSION,
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
@@ -169,7 +169,8 @@ PHP_MINIT_FUNCTION(xdiff)
 PHP_MINFO_FUNCTION(xdiff)
 {
 	php_info_print_table_start();
-	php_info_print_table_row(2, "xdiff support", "enabled");
+	php_info_print_table_header(2, "xdiff support", "enabled");
+	php_info_print_table_row(2, "extension version", PHP_XDIFF_VERSION);
 #ifdef HAVE_XDL_SET_ALLOCATOR
 	php_info_print_table_row(2, "memory limit", "supported (libxdiff version >= 0.6)");
 #else
