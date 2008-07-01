@@ -39,7 +39,7 @@ if test "$PHP_XDIFF" != "no"; then
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [
     PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $XDIFF_DIR/lib, XDIFF_SHARED_LIBADD)
-    AC_DEFINE(HAVE_XDIFFLIB,1,[ ])
+    AC_DEFINE(HAVE_XDIFFLIB,1, [ libxdiff ])
   ],[
     AC_MSG_ERROR([wrong xdiff lib version or lib not found])
   ],[
@@ -52,7 +52,7 @@ if test "$PHP_XDIFF" != "no"; then
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [
-    AC_DEFINE(HAVE_XDL_SET_ALLOCATOR,1,[ ])
+    AC_DEFINE(HAVE_XDL_SET_ALLOCATOR,1,[ libxdiff memory allocator ])
   ],[   ],[
     -L$XDIFF_DIR/lib
   ])
@@ -62,16 +62,22 @@ if test "$PHP_XDIFF" != "no"; then
   dnl
   old_CPPFLAGS=$CPPFLAGS
   CPPFLAGS=-I$XDIFF_DIR/include
+  AC_MSG_CHECKING(if xdiff memory allocator supports private data)
   AC_TRY_COMPILE([
 #include <xdiff.h>
 #include <stdlib.h>
   ], [
 memallocator_t a;
 a.priv = NULL;
-  ], [
-    AC_DEFINE(HAVE_XDL_ALLOCATOR_PRIV, 1, [ ])
-  ])
+  ], have_old_xdiff=no, have_old_xdiff=yes)
   CPPFLAGS=$old_CPPFLAGS
+
+  if test "$have_old_xdiff" = yes; then
+    AC_MSG_RESULT(no)
+    AC_DEFINE(HAVE_OLD_XDIFF, 1, [ Old version of memory allocator ])
+  else
+    AC_MSG_RESULT(yes)
+  fi
 
   PHP_NEW_EXTENSION(xdiff, xdiff.c, $ext_shared)
 fi

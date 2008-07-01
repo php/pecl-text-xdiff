@@ -66,7 +66,7 @@ static int make_merge3_str(char *content1, int size1, char *content2, int size2,
 
 #ifdef HAVE_XDL_SET_ALLOCATOR
 
-#ifdef HAVE_XDL_ALLOCATOR_PRIV
+#ifndef HAVE_OLD_XDIFF
 /* These are needed to avoid compilation error */
 static void *xdiff_malloc(void *foo, unsigned int size)
 {
@@ -103,7 +103,7 @@ static void *xdiff_realloc(void *ptr, unsigned int nsize)
 }
 
 static memallocator_t allocator = { xdiff_malloc, xdiff_free, xdiff_realloc };
-#endif	/* HAVE_XDL_ALLOCATOR_PRIV */
+#endif	/* HAVE_OLD_XDIFF */
 #endif	/* HAVE_XDL_SET_ALLOCATOR */
 
 /* {{{ xdiff_functions[]
