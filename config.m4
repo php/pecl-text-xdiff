@@ -20,7 +20,7 @@ if test "$PHP_XDIFF" != "no"; then
       fi
     done
   fi
-  
+
   if test -z "$XDIFF_DIR"; then
     AC_MSG_RESULT([not found])
     AC_MSG_ERROR([Please reinstall the libxdiff distribution])
@@ -33,7 +33,7 @@ if test "$PHP_XDIFF" != "no"; then
     EXTRA_LIBS="$EXTRA_LIBS -ldl"
   ])
 
-  LIBNAME=xdiff 
+  LIBNAME=xdiff
   LIBSYMBOL=xdl_diff
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
@@ -56,7 +56,7 @@ if test "$PHP_XDIFF" != "no"; then
   ],[   ],[
     -L$XDIFF_DIR/lib
   ])
-  
+
   dnl
   dnl Check for xdiff 0.9 or greater availability
   dnl
