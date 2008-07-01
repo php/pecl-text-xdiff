@@ -185,7 +185,8 @@ PHP_MINFO_FUNCTION(xdiff)
 PHP_FUNCTION(xdiff_string_diff)
 {
 	char *str1, *str2;
-	int size1, size2, retval, context = 3, minimal = 0;
+	int size1, size2, retval, minimal = 0;
+	long context = 3;
 	xdemitcb_t output;
 	struct string_buffer string;
 
@@ -217,7 +218,8 @@ PHP_FUNCTION(xdiff_string_diff)
 PHP_FUNCTION(xdiff_file_diff)
 {
 	char *filepath1, *filepath2, *dest;
-	int size, retval, context = 3, minimal = 0;
+	int size, retval, minimal = 0;
+	long context = 3;
 	xdemitcb_t output;
 	php_stream *output_stream;
 
@@ -361,7 +363,8 @@ PHP_FUNCTION(xdiff_string_patch)
 {
 	zval *error_ref = NULL;
 	char *src, *patch;
-	int retval, size1, size2, flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
+	int retval, size1, size2;
+	long flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
 	xdemitcb_t output, error_output;
 	struct string_buffer output_string, error_string;
 
