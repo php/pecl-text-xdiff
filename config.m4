@@ -54,14 +54,14 @@ if test "$PHP_XDIFF" != "no"; then
   AC_TRY_COMPILE([
 #include <xdiff.h>],[
 int i = XDL_PATCH_IGNOREBSPACE;
-  ], [ ], [ AC_MSG_ERROR([your libxdiff version is too old]) ])
+  ], AC_MSG_RESULT(yes) , AC_MSG_ERROR(your libxdiff version is too old) )
   CPPFLAGS=$old_CPPFLAGS
 
   dnl check for xdl_rabdiff function
-  PHP_CHECK_LIBRARY(xdiff,xdl_rabdiff,
-  [ ],[
-  	AC_MSG_ERROR([your libxdiff version is too old])
-  ],[ ])
+  PHP_CHECK_LIBRARY(xdiff,xdl_set_allocator, [ ], AC_MSG_ERROR([your libxdiff version is too old]))
 
+  dnl check for xdl_rabdiff function
+  PHP_CHECK_LIBRARY(xdiff,xdl_rabdiff, [ ], AC_MSG_ERROR([your libxdiff version is too old]))
+  
   PHP_NEW_EXTENSION(xdiff, xdiff.c, $ext_shared)
 fi
