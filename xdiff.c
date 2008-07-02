@@ -171,22 +171,24 @@ PHP_FUNCTION(xdiff_string_diff)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	retval = init_string(&string);
-	if (!retval) {
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out;
 
 	output.priv= &string;
 	output.outf = append_string;
 
 	retval = make_diff_str(str1, size1, str2, size2, &output, context, minimal);
-	if (!retval) {
-		free_string(&string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_string;
 
 	RETVAL_STRINGL(string.ptr, string.size, 1);
-	free_string(&string);
+
+out_free_string:
+	free(&string);
+out:
 }
 /* }}} */
 
@@ -204,21 +206,24 @@ PHP_FUNCTION(xdiff_file_diff)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	output_stream = php_stream_open_wrapper(dest, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!output_stream) {
-		RETURN_FALSE;
-	}
+	if (!output_stream)
+		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
 	retval = make_diff(filepath1, filepath2, &output, context, minimal TSRMLS_CC);
-	if (!retval) {
-		php_stream_close(output_stream);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_stream_close;
+
+	RETVAL_TRUE;
+
+out_stream_close:
 	php_stream_close(output_stream);
-	RETURN_TRUE;
+out:
 }
 /* }}} */
 
@@ -235,22 +240,24 @@ PHP_FUNCTION(xdiff_string_diff_binary)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	retval = init_string(&string);
-	if (!retval) {
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out;
 
 	output.priv= &string;
 	output.outf = append_string;
 
 	retval = make_bdiff_str(str1, size1, str2, size2, &output);
-	if (!retval) {
-		free_string(&string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_string;
 
 	RETVAL_STRINGL(string.ptr, string.size, 1);
+
+out_free_string:
 	free_string(&string);
+out:
 }
 /* }}} */
 
@@ -267,21 +274,24 @@ PHP_FUNCTION(xdiff_file_diff_binary)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	output_stream = php_stream_open_wrapper(result, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!output_stream) {
-		RETURN_FALSE;
-	}
+	if (!output_stream)
+		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
 	retval = make_bdiff(filepath1, filepath2, &output TSRMLS_CC);
-	if (!retval) {
-		php_stream_close(output_stream);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_stream_close;
+
+	RETVAL_TRUE;
+	
+out_stream_close:
 	php_stream_close(output_stream);
-	RETURN_TRUE;
+out:
 }
 /* }}} */
 
@@ -298,22 +308,24 @@ PHP_FUNCTION(xdiff_string_rabdiff)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	retval = init_string(&string);
-	if (!retval) {
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out;
 
 	output.priv= &string;
 	output.outf = append_string;
 
 	retval = make_rabdiff_str(str1, size1, str2, size2, &output);
-	if (!retval) {
-		free_string(&string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_string;
 
 	RETVAL_STRINGL(string.ptr, string.size, 1);
+
+out_free_string:
 	free_string(&string);
+out:
 }
 /* }}} */
 
@@ -330,21 +342,24 @@ PHP_FUNCTION(xdiff_file_rabdiff)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	output_stream = php_stream_open_wrapper(result, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!output_stream) {
-		RETURN_FALSE;
-	}
+	if (!output_stream)
+		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
 	retval = make_rabdiff(filepath1, filepath2, &output TSRMLS_CC);
-	if (!retval) {
-		php_stream_close(output_stream);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_stream_close;
+
+	RETVAL_TRUE;
+	
+out_stream_close:
 	php_stream_close(output_stream);
-	RETURN_TRUE;
+out:
 }
 /* }}} */
 
@@ -362,38 +377,37 @@ PHP_FUNCTION(xdiff_file_patch)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	output_stream = php_stream_open_wrapper(dest_path, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!output_stream) {
-		RETURN_FALSE;
-	}
+	if (!output_stream)
+		goto out;
 
 	output.outf = append_stream;
 	output.priv = output_stream;
 
 	retval = init_string(&error_string);
-	if (!retval) {
-		php_stream_close(output_stream);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_stream_close;
 
 	error_output.priv= &error_string;
 	error_output.outf = append_string;
 
 	retval = make_patch(src_path, patch_path, &output, &error_output, flags TSRMLS_CC);
-	php_stream_close(output_stream);
-
-	if (retval < 0) {
-		free_string(&error_string);
-		RETURN_FALSE;
-	}
+	if (retval < 0)
+		goto out_free_string;
 
 	if (error_string.size > 0) {
 		RETVAL_STRINGL(error_string.ptr, error_string.size, 1);
-		free_string(&error_string);
 	} else {
-		free_string(&error_string);
-		RETURN_TRUE;
+		RETVAL_TRUE;
 	}
+	
+out_free_string:
+	free_string(&error_string);
+out_stream_close:
+	php_stream_close(output_stream);
+out:
 }
 /* }}} */
 
@@ -412,29 +426,25 @@ PHP_FUNCTION(xdiff_string_patch)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	retval = init_string(&output_string);
-	if (!retval) {
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out;
 
 	output.priv = &output_string;
 	output.outf = append_string;
 
 	retval = init_string(&error_string);
-	if (!retval) {
-		free_string(&output_string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_output_string;
 
 	error_output.priv= &error_string;
 	error_output.outf = append_string;
 
 	retval = make_patch_str(src, size1, patch, size2, &output, &error_output, flags);
-	if (retval < 0) {
-		free_string(&error_string);
-		free_string(&output_string);
-		RETURN_FALSE;
-	}
+	if (retval < 0)
+		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
 		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size, 1);
@@ -442,13 +452,15 @@ PHP_FUNCTION(xdiff_string_patch)
 
 	if (output_string.size > 0) {
 		RETVAL_STRINGL(output_string.ptr, output_string.size, 1);
-		free_string(&output_string);
-		free_string(&error_string);
 	} else {
-		free_string(&output_string);
-		free_string(&error_string);
-		RETURN_EMPTY_STRING();
+		RETVAL_EMPTY_STRING();
 	}
+
+out_free_error_string:
+	free_string(&error_string);
+out_free_output_string:
+	free_string(&output_string);
+out:
 }
 /* }}} */
 
@@ -464,11 +476,12 @@ PHP_FUNCTION(xdiff_file_patch_binary)
 	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", &src_path, &size, &patch_path, &size, &dest_path, &size) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
+	
+	RETVAL_FALSE;
 
 	output_stream = php_stream_open_wrapper(dest_path, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!output_stream) {
-		RETURN_FALSE;
-	}
+	if (!output_stream)
+		goto out;
 
 	output.outf = append_stream;
 	output.priv = output_stream;
@@ -476,11 +489,10 @@ PHP_FUNCTION(xdiff_file_patch_binary)
 	retval = make_bpatch(src_path, patch_path, &output TSRMLS_CC);
 	php_stream_close(output_stream);
 
-	if (retval < 0) {
-		RETURN_FALSE;
-	}
+	if (retval == 0)
+		RETVAL_TRUE;
 
-	RETURN_TRUE;
+out:
 }
 /* }}} */
 
@@ -497,22 +509,24 @@ PHP_FUNCTION(xdiff_string_patch_binary)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	retval = init_string(&output_string);
-	if (!retval) {
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out;
 
 	output.priv = &output_string;
 	output.outf = append_string;
 
 	retval = make_bpatch_str(src, size1, patch, size2, &output);
-	if (retval < 0) {
-		free_string(&output_string);
-		RETURN_FALSE;
-	}
+	if (retval < 0) 
+		goto out_free_string;
 
 	RETVAL_STRINGL(output_string.ptr, output_string.size, 1);
+	
+out_free_string:	
 	free_string(&output_string);
+out:
 }
 /* }}} */
 
@@ -530,38 +544,37 @@ PHP_FUNCTION(xdiff_file_merge3)
 		WRONG_PARAM_COUNT;
 	}
 
+	RETVAL_FALSE;
+
 	output_stream = php_stream_open_wrapper(dest, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!output_stream) {
-		RETURN_FALSE;
-	}
+	if (!output_stream)
+		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
 	retval = init_string(&string);
-	if (!retval) {
-		php_stream_close(output_stream);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_stream_close;
 
 	error_output.priv = &string;
 	error_output.outf = append_string;
 
 	retval = make_merge3(file1, file2, file3, &output, &error_output TSRMLS_CC);
-	php_stream_close(output_stream);
-
-	if (!retval) {
-		free_string(&string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_string;
 
 	if (string.size > 0) {
 		RETVAL_STRINGL(string.ptr, string.size, 1);
-		free_string(&string);
 	} else {
-		free_string(&string);
-		RETURN_TRUE;
+		RETVAL_TRUE;
 	}
+	
+out_free_string:
+	free_string(&string);
+out_stream_close:
+	php_stream_close(output_stream);
+out:
 }
 /* }}} */
 
@@ -578,31 +591,26 @@ PHP_FUNCTION(xdiff_string_merge3)
 	if (ZEND_NUM_ARGS() < 3 || ZEND_NUM_ARGS() > 4 || zend_parse_parameters_ex(0, ZEND_NUM_ARGS() TSRMLS_CC, "sss|z", &file1, &size1, &file2, &size2, &file3, &size3, &error_ref) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
+	
+	RETVAL_FALSE;
 
 	retval = init_string(&output_string);
-	if (!retval) {
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out;
 
 	output.priv = &output_string;
 	output.outf = append_string;
 
 	retval = init_string(&error_string);
-	if (!retval) {
-		free_string(&output_string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_output_string;
 
 	error_output.priv = &error_string;
 	error_output.outf = append_string;
 
 	retval = make_merge3_str(file1, size1, file2, size2, file3, size3, &output, &error_output);
-
-	if (!retval) {
-		free_string(&output_string);
-		free_string(&error_string);
-		RETURN_FALSE;
-	}
+	if (!retval)
+		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
 		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size, 1);
@@ -610,13 +618,15 @@ PHP_FUNCTION(xdiff_string_merge3)
 
 	if (output_string.size > 0) {
 		RETVAL_STRINGL(output_string.ptr, output_string.size, 1);
-		free_string(&output_string);
-		free_string(&error_string);
 	} else {
-		free_string(&output_string);
-		free_string(&error_string);
-		RETURN_TRUE;
+		RETVAL_TRUE;
 	}
+
+out_free_error_string:
+	free_string(&error_string);
+out_free_output_string:
+	free_string(&output_string);
+out:
 }
 /* }}} */
 
@@ -629,35 +639,34 @@ static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC)
 	php_stream_statbuf stat;
 
 	src = php_stream_open_wrapper((char *) filepath, "rb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
-	if (!src) {
-		return 0;
-	}
+	if (!src)
+		goto out;
 
 	retval = php_stream_stat(src, &stat);
-	if (retval < 0) {
-		php_stream_close(src);
-		return 0;
-	}
+	if (retval < 0)
+		goto out_stream_close;
 
 	filesize = stat.sb.st_size;
 
 	retval = xdl_init_mmfile(dest, filesize, XDL_MMF_ATOMIC);
-	if (retval < 0) {
-		php_stream_close(src);
-		return 0;
-	}
+	if (retval < 0)
+		goto out_stream_close;
 
 	ptr = xdl_mmfile_writeallocate(dest, (long) filesize);
-	if (!ptr) {
-		xdl_free_mmfile(dest);
-		php_stream_close(src);
-		return 0;
-	}
+	if (!ptr)
+		goto out_free_mmfile;
 
 	php_stream_read(src, ptr, filesize);
 	php_stream_close(src);
 
 	return 1;
+	
+out_free_mmfile:
+	xdl_free_mmfile(dest);
+out_stream_close:
+	php_stream_close(src);
+out:
+	return 0;
 }
 
 static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *dest)
@@ -666,18 +675,20 @@ static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *d
 	void *ptr;
 
 	retval = xdl_init_mmfile(dest, size, XDL_MMF_ATOMIC);
-	if (retval < 0) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	ptr = xdl_mmfile_writeallocate(dest, (long) size);
-	if (!ptr) {
-		xdl_free_mmfile(dest);
-		return 0;
-	}
+	if (!ptr)
+		goto out_free_mmfile;
 
 	memcpy(ptr, buffer, size);
 	return 1;
+
+out_free_mmfile:
+	xdl_free_mmfile(dest);
+out:
+	return 0;
 }
 
 static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
@@ -686,6 +697,7 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 	unsigned int i;
 
 	for (i = 0; i < array_size; i++) {
+		/* FIXME - what if eralloc fails? */
 		string->ptr = erealloc(string->ptr, string->size + buffer[i].size + 1);
 		memcpy(string->ptr + string->size, buffer[i].ptr, buffer[i].size);
 		string->size += buffer[i].size;
@@ -703,18 +715,19 @@ static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size)
 	for (i = 0; i < array_size; i++) {
 		php_stream_write(stream, buffer[i].ptr, buffer[i].size);
 	}
+	
 	return 1;
 }
 
 static int init_string(struct string_buffer *string)
 {
-	string->size = 0;
 	string->ptr = emalloc(1);
-	if (!string->ptr) {
+	if (!string->ptr)
 		return 0;
-	}
 
+	string->size = 0;
 	memset(string->ptr, 0, 1);
+	
 	return 1;
 }
 
@@ -728,31 +741,31 @@ static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int c
 	mmfile_t file1, file2;
 	xpparam_t params;
 	xdemitconf_t conf;
-	int retval;
+	int retval, result = 0;
 
 	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	params.flags = (minimal) ? XDF_NEED_MINIMAL : 0;
 	conf.ctxlen = abs(context);
 
 	retval = xdl_diff(&file1, &file2, &params, &conf, output);
-	xdl_free_mmfile(&file1);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+
+out_free_mmfile2:
 	xdl_free_mmfile(&file2);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_diff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output, int context, int minimal)
@@ -760,323 +773,319 @@ static int make_diff_str(char *str1, int size1, char *str2, int size2, xdemitcb_
 	mmfile_t file1, file2;
 	xpparam_t params;
 	xdemitconf_t conf;
-	int retval;
+	int retval, result = 0;
 
 	retval = load_into_mm_file(str1, size1, &file1);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_into_mm_file(str2, size2, &file2);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	params.flags = (minimal) ? XDF_NEED_MINIMAL : 0;
 	conf.ctxlen = abs(context);
 
 	retval = xdl_diff(&file1, &file2, &params, &conf, output);
-	xdl_free_mmfile(&file1);
+	if (!retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+
+out_free_mmfile2:
 	xdl_free_mmfile(&file2);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_bdiff(char *filepath1, char *filepath2, xdemitcb_t *output TSRMLS_DC)
 {
 	mmfile_t file1, file2;
 	bdiffparam_t params;
-	int retval;
+	int retval, result = 0;
 
 	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	params.bsize = 16;
 
 	retval = xdl_bdiff(&file1, &file2, &params, output);
-	xdl_free_mmfile(&file1);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+
+out_free_mmfile2:
 	xdl_free_mmfile(&file2);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_bdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output)
 {
 	mmfile_t file1, file2;
 	bdiffparam_t params;
-	int retval;
+	int retval, result = 0;
 
 	retval = load_into_mm_file(str1, size1, &file1);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_into_mm_file(str2, size2, &file2);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	params.bsize = 16;
 
 	retval = xdl_bdiff(&file1, &file2, &params, output);
-	xdl_free_mmfile(&file1);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+
+out_free_mmfile2:
 	xdl_free_mmfile(&file2);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_rabdiff(char *filepath1, char *filepath2, xdemitcb_t *output TSRMLS_DC)
 {
 	mmfile_t file1, file2;
-	int retval;
+	int retval, result = 0;
 
 	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = xdl_rabdiff(&file1, &file2, output);
-	xdl_free_mmfile(&file1);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+
+out_free_mmfile2:
 	xdl_free_mmfile(&file2);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_rabdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output)
 {
 	mmfile_t file1, file2;
-	int retval;
+	int retval, result = 0;
 
 	retval = load_into_mm_file(str1, size1, &file1);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_into_mm_file(str2, size2, &file2);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = xdl_rabdiff(&file1, &file2, output);
-	xdl_free_mmfile(&file1);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+
+out_free_mmfile2:
 	xdl_free_mmfile(&file2);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xdemitcb_t *error, int flags TSRMLS_DC)
 {
-	int retval;
 	mmfile_t file, patch;
+	int retval, result = 0;
 
 	retval = load_mm_file(file_path, &file TSRMLS_CC);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_mm_file(patch_path, &patch TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = xdl_patch(&file, &patch, flags, output, error);
-	xdl_free_mmfile(&file);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+	
+out_free_mmfile2:
 	xdl_free_mmfile(&patch);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file);
+out:	
+	return result;
 }
 
 static int make_patch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output, xdemitcb_t *error, int flags)
 {
-	int retval;
 	mmfile_t file_mm, patch_mm;
+	int retval, result = 0;
 
 	retval = load_into_mm_file(file, size1, &file_mm);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_into_mm_file(patch, size2, &patch_mm);
-	if (!retval) {
-		xdl_free_mmfile(&file_mm);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = xdl_patch(&file_mm, &patch_mm, flags, output, error);
-	xdl_free_mmfile(&file_mm);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+	
+out_free_mmfile2:
 	xdl_free_mmfile(&patch_mm);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file_mm);
+out:	
+	return result;
 }
 
 static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output TSRMLS_DC)
 {
-	int retval;
 	mmfile_t file_mm, patch_mm;
+	int retval, result = 0;
 
 	retval = load_mm_file(file_path, &file_mm TSRMLS_CC);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_mm_file(patch_path, &patch_mm TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file_mm);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = xdl_bpatch(&file_mm, &patch_mm, output);
-	xdl_free_mmfile(&file_mm);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+	
+out_free_mmfile2:
 	xdl_free_mmfile(&patch_mm);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file_mm);
+out:	
+	return result;
 }
 
 static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output)
 {
-	int retval;
 	mmfile_t file_mm, patch_mm;
+	int retval, result = 0;
 
 	retval = load_into_mm_file(file, size1, &file_mm);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_into_mm_file(patch, size2, &patch_mm);
-	if (!retval) {
-		xdl_free_mmfile(&file_mm);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = xdl_bpatch(&file_mm, &patch_mm, output);
-	xdl_free_mmfile(&file_mm);
+	if (retval < 0)
+		goto out_free_mmfile2;
+
+	result = 1;
+	
+out_free_mmfile2:
 	xdl_free_mmfile(&patch_mm);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile:
+	xdl_free_mmfile(&file_mm);
+out:	
+	return result;
 }
 
 static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error TSRMLS_DC)
 {
-	int retval;
 	mmfile_t file1, file2, file3;
+	int retval, result = 0;
 
 	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = load_mm_file(filepath3, &file3 TSRMLS_CC);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		xdl_free_mmfile(&file2);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile2;
 
 	retval = xdl_merge3(&file1, &file2, &file3, output, error);
-	xdl_free_mmfile(&file1);
-	xdl_free_mmfile(&file2);
+	if (retval < 0)
+		goto out_free_mmfile3;
+
+	result = 1;
+	
+out_free_mmfile3:
 	xdl_free_mmfile(&file3);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile2:
+	xdl_free_mmfile(&file2);
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error)
 {
-	int retval;
 	mmfile_t file1, file2, file3;
+	int retval, result = 0;
 
 	retval = load_into_mm_file(content1, size1, &file1);
-	if (!retval) {
-		return 0;
-	}
+	if (!retval)
+		goto out;
 
 	retval = load_into_mm_file(content2, size2, &file2);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile;
 
 	retval = load_into_mm_file(content3, size3, &file3);
-	if (!retval) {
-		xdl_free_mmfile(&file1);
-		xdl_free_mmfile(&file2);
-		return 0;
-	}
+	if (!retval)
+		goto out_free_mmfile2;
 
 	retval = xdl_merge3(&file1, &file2, &file3, output, error);
-	xdl_free_mmfile(&file1);
-	xdl_free_mmfile(&file2);
+	if (retval < 0)
+		goto out_free_mmfile3;
+
+	result = 1;
+
+out_free_mmfile3:
 	xdl_free_mmfile(&file3);
-
-	if (retval < 0) {
-		return 0;
-	}
-
-	return 1;
+out_free_mmfile2:
+	xdl_free_mmfile(&file2);
+out_free_mmfile:
+	xdl_free_mmfile(&file1);
+out:
+	return result;
 }
 
 /*
