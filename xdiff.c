@@ -66,6 +66,8 @@ static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output TSR
 static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output);
 static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error TSRMLS_DC);
 static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error);
+static int make_rabdiff(char *filepath1, char *filepath2, xdemitcb_t *output TSRMLS_DC);
+static int make_rabdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output);
 
 static void *xdiff_malloc(void *foo, unsigned int size)
 {
@@ -89,16 +91,18 @@ static memallocator_t allocator = { NULL, xdiff_malloc, xdiff_free, xdiff_reallo
  * Every user visible function must have an entry in xdiff_functions[].
  */
 function_entry xdiff_functions[] = {
-	PHP_FE(xdiff_file_diff,			NULL)
+	PHP_FE(xdiff_file_diff,				NULL)
 	PHP_FE(xdiff_file_diff_binary,		NULL)
-	PHP_FE(xdiff_file_patch,		NULL)
+	PHP_FE(xdiff_file_patch,			NULL)
 	PHP_FE(xdiff_file_patch_binary,		NULL)
-	PHP_FE(xdiff_file_merge3,		NULL)
-	PHP_FE(xdiff_string_diff,		NULL)
+	PHP_FE(xdiff_file_merge3,			NULL)
+	PHP_FE(xdiff_file_rabdiff,			NULL)
+	PHP_FE(xdiff_string_diff,			NULL)
 	PHP_FE(xdiff_string_diff_binary,	NULL)
-	PHP_FE(xdiff_string_patch,		xdiff_arg_force_ref)
+	PHP_FE(xdiff_string_patch,			xdiff_arg_force_ref)
 	PHP_FE(xdiff_string_patch_binary,	NULL)
-	PHP_FE(xdiff_string_merge3,		xdiff_arg_force_ref)
+	PHP_FE(xdiff_string_merge3,			xdiff_arg_force_ref)
+	PHP_FE(xdiff_string_rabdiff,		NULL)
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -272,6 +276,69 @@ PHP_FUNCTION(xdiff_file_diff_binary)
 	output.outf = append_stream;
 
 	retval = make_bdiff(filepath1, filepath2, &output TSRMLS_CC);
+	if (!retval) {
+		php_stream_close(output_stream);
+		RETURN_FALSE;
+	}
+	php_stream_close(output_stream);
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto mixed xdiff_string_rabdiff(string str1, string str2)
+ */
+PHP_FUNCTION(xdiff_string_rabdiff)
+{
+	char *str1, *str2;
+	int size1, size2, retval;
+	xdemitcb_t output;
+	struct string_buffer string;
+
+	if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &str1, &size1, &str2, &size2) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	retval = init_string(&string);
+	if (!retval) {
+		RETURN_FALSE;
+	}
+
+	output.priv= &string;
+	output.outf = append_string;
+
+	retval = make_rabdiff_str(str1, size1, str2, size2, &output);
+	if (!retval) {
+		free_string(&string);
+		RETURN_FALSE;
+	}
+
+	RETVAL_STRINGL(string.ptr, string.size, 1);
+	free_string(&string);
+}
+/* }}} */
+
+/* {{{ proto bool xdiff_file_rabdiff(string file1, string file2, string dest)
+ */
+PHP_FUNCTION(xdiff_file_rabdiff)
+{
+	char *filepath1, *filepath2, *result;
+	int size, retval;
+	xdemitcb_t output;
+	php_stream *output_stream;
+
+	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", &filepath1, &size, &filepath2, &size, &result, &size) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	output_stream = php_stream_open_wrapper(result, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	if (!output_stream) {
+		RETURN_FALSE;
+	}
+
+	output.priv = output_stream;
+	output.outf = append_stream;
+
+	retval = make_rabdiff(filepath1, filepath2, &output TSRMLS_CC);
 	if (!retval) {
 		php_stream_close(output_stream);
 		RETURN_FALSE;
@@ -770,6 +837,60 @@ static int make_bdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb
 	params.bsize = 16;
 
 	retval = xdl_bdiff(&file1, &file2, &params, output);
+	xdl_free_mmfile(&file1);
+	xdl_free_mmfile(&file2);
+
+	if (retval < 0) {
+		return 0;
+	}
+
+	return 1;
+}
+
+static int make_rabdiff(char *filepath1, char *filepath2, xdemitcb_t *output TSRMLS_DC)
+{
+	mmfile_t file1, file2;
+	int retval;
+
+	retval = load_mm_file(filepath1, &file1 TSRMLS_CC);
+	if (!retval) {
+		return 0;
+	}
+
+	retval = load_mm_file(filepath2, &file2 TSRMLS_CC);
+	if (!retval) {
+		xdl_free_mmfile(&file1);
+		return 0;
+	}
+
+	retval = xdl_rabdiff(&file1, &file2, output);
+	xdl_free_mmfile(&file1);
+	xdl_free_mmfile(&file2);
+
+	if (retval < 0) {
+		return 0;
+	}
+
+	return 1;
+}
+
+static int make_rabdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output)
+{
+	mmfile_t file1, file2;
+	int retval;
+
+	retval = load_into_mm_file(str1, size1, &file1);
+	if (!retval) {
+		return 0;
+	}
+
+	retval = load_into_mm_file(str2, size2, &file2);
+	if (!retval) {
+		xdl_free_mmfile(&file1);
+		return 0;
+	}
+
+	retval = xdl_rabdiff(&file1, &file2, output);
 	xdl_free_mmfile(&file1);
 	xdl_free_mmfile(&file2);
 
