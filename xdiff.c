@@ -29,6 +29,9 @@
 
 #include <xdiff.h>
 
+/* Not exported by header file */
+extern char libxdiff_version[];
+
 struct string_buffer {
 	char *ptr;
 	unsigned long size;
@@ -64,10 +67,6 @@ static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemit
 static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error TSRMLS_DC);
 static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error);
 
-#ifdef HAVE_XDL_SET_ALLOCATOR
-
-#ifndef HAVE_OLD_XDIFF
-/* These are needed to avoid compilation error */
 static void *xdiff_malloc(void *foo, unsigned int size)
 {
 	return emalloc(size);
@@ -84,27 +83,6 @@ static void *xdiff_realloc(void *foo, void *ptr, unsigned int nsize)
 }
 
 static memallocator_t allocator = { NULL, xdiff_malloc, xdiff_free, xdiff_realloc };
-
-#else
-/* These are needed to avoid compilation error */
-static void *xdiff_malloc(unsigned int size)
-{
-	return emalloc(size);
-}
-
-static void xdiff_free(void *ptr)
-{
-	efree(ptr);
-}
-
-static void *xdiff_realloc(void *ptr, unsigned int nsize)
-{
-	return erealloc(ptr, nsize);
-}
-
-static memallocator_t allocator = { xdiff_malloc, xdiff_free, xdiff_realloc };
-#endif	/* HAVE_OLD_XDIFF */
-#endif	/* HAVE_XDL_SET_ALLOCATOR */
 
 /* {{{ xdiff_functions[]
  *
@@ -159,6 +137,7 @@ PHP_MINIT_FUNCTION(xdiff)
 
 	REGISTER_LONG_CONSTANT("XDIFF_PATCH_NORMAL", XDL_PATCH_NORMAL, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("XDIFF_PATCH_REVERSE", XDL_PATCH_REVERSE, CONST_CS | CONST_PERSISTENT);
+	REGISTER_LONG_CONSTANT("XDIFF_PATCH_IGNORESPACE", XDL_PATCH_IGNOREBSPACE, CONST_CS | CONST_PERSISTENT);
 
 	return SUCCESS;
 }
@@ -171,11 +150,7 @@ PHP_MINFO_FUNCTION(xdiff)
 	php_info_print_table_start();
 	php_info_print_table_header(2, "xdiff support", "enabled");
 	php_info_print_table_row(2, "extension version", PHP_XDIFF_VERSION);
-#ifdef HAVE_XDL_SET_ALLOCATOR
-	php_info_print_table_row(2, "memory limit", "supported (libxdiff version >= 0.6)");
-#else
-	php_info_print_table_row(2, "memory limit", "not supported (libxdiff version < 0.6)");
-#endif
+	php_info_print_table_row(2, "libxdiff version", libxdiff_version);
 	php_info_print_table_end();
 }
 /* }}} */
