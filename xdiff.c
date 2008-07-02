@@ -187,8 +187,9 @@ PHP_FUNCTION(xdiff_string_diff)
 	RETVAL_STRINGL(string.ptr, string.size, 1);
 
 out_free_string:
-	free(&string);
+	free_string(&string);
 out:
+	return;
 }
 /* }}} */
 
@@ -224,6 +225,7 @@ PHP_FUNCTION(xdiff_file_diff)
 out_stream_close:
 	php_stream_close(output_stream);
 out:
+	return;
 }
 /* }}} */
 
@@ -258,6 +260,7 @@ PHP_FUNCTION(xdiff_string_diff_binary)
 out_free_string:
 	free_string(&string);
 out:
+	return;
 }
 /* }}} */
 
@@ -292,6 +295,7 @@ PHP_FUNCTION(xdiff_file_diff_binary)
 out_stream_close:
 	php_stream_close(output_stream);
 out:
+	return;
 }
 /* }}} */
 
@@ -326,6 +330,7 @@ PHP_FUNCTION(xdiff_string_rabdiff)
 out_free_string:
 	free_string(&string);
 out:
+	return;
 }
 /* }}} */
 
@@ -360,6 +365,7 @@ PHP_FUNCTION(xdiff_file_rabdiff)
 out_stream_close:
 	php_stream_close(output_stream);
 out:
+	return;
 }
 /* }}} */
 
@@ -408,6 +414,7 @@ out_free_string:
 out_stream_close:
 	php_stream_close(output_stream);
 out:
+	return;
 }
 /* }}} */
 
@@ -461,6 +468,7 @@ out_free_error_string:
 out_free_output_string:
 	free_string(&output_string);
 out:
+	return;
 }
 /* }}} */
 
@@ -491,8 +499,9 @@ PHP_FUNCTION(xdiff_file_patch_binary)
 
 	if (retval == 0)
 		RETVAL_TRUE;
-
+		
 out:
+	return;
 }
 /* }}} */
 
@@ -527,6 +536,7 @@ PHP_FUNCTION(xdiff_string_patch_binary)
 out_free_string:	
 	free_string(&output_string);
 out:
+	return;
 }
 /* }}} */
 
@@ -575,6 +585,7 @@ out_free_string:
 out_stream_close:
 	php_stream_close(output_stream);
 out:
+	return;
 }
 /* }}} */
 
@@ -627,6 +638,7 @@ out_free_error_string:
 out_free_output_string:
 	free_string(&output_string);
 out:
+	return;
 }
 /* }}} */
 
@@ -675,7 +687,7 @@ static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *d
 	void *ptr;
 
 	retval = xdl_init_mmfile(dest, size, XDL_MMF_ATOMIC);
-	if (!retval)
+	if (retval < 0)
 		goto out;
 
 	ptr = xdl_mmfile_writeallocate(dest, (long) size);
@@ -787,7 +799,7 @@ static int make_diff_str(char *str1, int size1, char *str2, int size2, xdemitcb_
 	conf.ctxlen = abs(context);
 
 	retval = xdl_diff(&file1, &file2, &params, &conf, output);
-	if (!retval < 0)
+	if (retval < 0)
 		goto out_free_mmfile2;
 
 	result = 1;
