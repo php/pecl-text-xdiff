@@ -93,19 +93,23 @@ static memallocator_t allocator = { NULL, xdiff_malloc, xdiff_free, xdiff_reallo
  */
 function_entry xdiff_functions[] = {
 	PHP_FE(xdiff_file_diff,				NULL)
-	PHP_FE(xdiff_file_diff_binary,		NULL)
+	PHP_FE(xdiff_file_bdiff,			NULL)
 	PHP_FE(xdiff_file_patch,			NULL)
-	PHP_FE(xdiff_file_patch_binary,		NULL)
+	PHP_FE(xdiff_file_bpatch,			NULL)
 	PHP_FE(xdiff_file_merge3,			NULL)
 	PHP_FE(xdiff_file_rabdiff,			NULL)
 	PHP_FE(xdiff_file_bdiff_size,		NULL)
 	PHP_FE(xdiff_string_diff,			NULL)
-	PHP_FE(xdiff_string_diff_binary,	NULL)
+	PHP_FE(xdiff_string_bdiff,			NULL)
 	PHP_FE(xdiff_string_patch,			xdiff_arg_force_ref)
-	PHP_FE(xdiff_string_patch_binary,	NULL)
+	PHP_FE(xdiff_string_bpatch,			NULL)
 	PHP_FE(xdiff_string_merge3,			xdiff_arg_force_ref)
 	PHP_FE(xdiff_string_rabdiff,		NULL)
 	PHP_FE(xdiff_string_bdiff_size,		NULL)
+	PHP_FALIAS(xdiff_file_diff_binary,		xdiff_file_bdiff,      NULL)
+	PHP_FALIAS(xdiff_file_patch_binary,		xdiff_file_bpatch,     NULL)
+	PHP_FALIAS(xdiff_string_diff_binary,	xdiff_string_bdiff,    NULL)
+	PHP_FALIAS(xdiff_string_patch_binary,	xdiff_string_bpatch,   NULL)
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -235,7 +239,7 @@ out:
 
 /* {{{ proto mixed xdiff_string_diff_binary(string str1, string str2)
  */
-PHP_FUNCTION(xdiff_string_diff_binary)
+PHP_FUNCTION(xdiff_string_bdiff)
 {
 	char *str1, *str2;
 	int size1, size2, retval;
@@ -271,7 +275,7 @@ out:
 
 /* {{{ proto bool xdiff_file_diff_binary(string file1, string file2, string dest)
  */
-PHP_FUNCTION(xdiff_file_diff_binary)
+PHP_FUNCTION(xdiff_file_bdiff)
 {
 	char *filepath1, *filepath2, *result;
 	int size, retval;
@@ -411,18 +415,18 @@ out:
  */
 PHP_FUNCTION(xdiff_string_bdiff_size)
 {
-	char *filepath;
+	char *patch;
 	int size, retval;
 	long result;
 	mmfile_t file;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filepath, &size) == FAILURE) {
+	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &patch, &size) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
 	RETVAL_FALSE;
 
-	retval = load_into_mm_file(filepath, &file TSRMLS_CC);
+	retval = load_into_mm_file(patch, size, &file TSRMLS_CC);
 	if (!retval)
 		goto out;
 		
@@ -546,7 +550,7 @@ out:
 
 /* {{{ proto bool xdiff_file_patch_binary(string file, string patch, string dest)
  */
-PHP_FUNCTION(xdiff_file_patch_binary)
+PHP_FUNCTION(xdiff_file_bpatch)
 {
 	php_stream *output_stream;
 	char *src_path, *patch_path, *dest_path;
@@ -579,7 +583,7 @@ out:
 
 /* {{{ proto string xdiff_string_patch_binary(string str, string patch)
  */
-PHP_FUNCTION(xdiff_string_patch_binary)
+PHP_FUNCTION(xdiff_string_bpatch)
 {
 	char *src, *patch;
 	int retval, size1, size2;
