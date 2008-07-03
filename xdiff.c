@@ -715,11 +715,17 @@ out:
 static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 {
 	struct string_buffer *string = ptr;
+	void *new_ptr;
 	unsigned int i;
 
 	for (i = 0; i < array_size; i++) {
-		/* FIXME - what if eralloc fails? */
-		string->ptr = erealloc(string->ptr, string->size + buffer[i].size + 1);
+		new_ptr = erealloc(string->ptr, string->size + buffer[i].size + 1);
+		if (!new_ptr) {
+			efree(string->ptr);
+			return -1;
+		}
+		
+		string->ptr = new_ptr;
 		memcpy(string->ptr + string->size, buffer[i].ptr, buffer[i].size);
 		string->size += buffer[i].size;
 	}
