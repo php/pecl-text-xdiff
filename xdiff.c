@@ -55,6 +55,7 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size);
 static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size);
 static int init_string(struct string_buffer *string);
 static void free_string(struct string_buffer *string);
+static void invalidate_string(struct string_buffer *string);
 
 static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal TSRMLS_DC);
 static int make_diff_str(char *str1, int size1, char *str2, int size2,  xdemitcb_t *output, int context, int minimal);
@@ -184,7 +185,8 @@ PHP_FUNCTION(xdiff_string_diff)
 	if (!retval)
 		goto out_free_string;
 
-	RETVAL_STRINGL(string.ptr, string.size, 1);
+	RETVAL_STRINGL(string.ptr, string.size, 0);
+	invalidate_string(&string);
 
 out_free_string:
 	free_string(&string);
@@ -255,7 +257,8 @@ PHP_FUNCTION(xdiff_string_diff_binary)
 	if (!retval)
 		goto out_free_string;
 
-	RETVAL_STRINGL(string.ptr, string.size, 1);
+	RETVAL_STRINGL(string.ptr, string.size, 0);
+	invalidate_string(&string);
 
 out_free_string:
 	free_string(&string);
@@ -325,7 +328,8 @@ PHP_FUNCTION(xdiff_string_rabdiff)
 	if (!retval)
 		goto out_free_string;
 
-	RETVAL_STRINGL(string.ptr, string.size, 1);
+	RETVAL_STRINGL(string.ptr, string.size, 0);
+	invalidate_string(&string);
 
 out_free_string:
 	free_string(&string);
@@ -404,7 +408,8 @@ PHP_FUNCTION(xdiff_file_patch)
 		goto out_free_string;
 
 	if (error_string.size > 0) {
-		RETVAL_STRINGL(error_string.ptr, error_string.size, 1);
+		RETVAL_STRINGL(error_string.ptr, error_string.size, 0);
+		invalidate_string(&error_string);
 	} else {
 		RETVAL_TRUE;
 	}
@@ -458,7 +463,8 @@ PHP_FUNCTION(xdiff_string_patch)
 	}
 
 	if (output_string.size > 0) {
-		RETVAL_STRINGL(output_string.ptr, output_string.size, 1);
+		RETVAL_STRINGL(output_string.ptr, output_string.size, 0);
+		invalidate_string(&output_string);
 	} else {
 		RETVAL_EMPTY_STRING();
 	}
@@ -531,7 +537,8 @@ PHP_FUNCTION(xdiff_string_patch_binary)
 	if (retval < 0) 
 		goto out_free_string;
 
-	RETVAL_STRINGL(output_string.ptr, output_string.size, 1);
+	RETVAL_STRINGL(output_string.ptr, output_string.size, 0);
+	invalidate_string(&output_string);
 	
 out_free_string:	
 	free_string(&output_string);
@@ -575,7 +582,8 @@ PHP_FUNCTION(xdiff_file_merge3)
 		goto out_free_string;
 
 	if (string.size > 0) {
-		RETVAL_STRINGL(string.ptr, string.size, 1);
+		RETVAL_STRINGL(string.ptr, string.size, 0);
+		invalidate_string(&string);
 	} else {
 		RETVAL_TRUE;
 	}
@@ -628,7 +636,8 @@ PHP_FUNCTION(xdiff_string_merge3)
 	}
 
 	if (output_string.size > 0) {
-		RETVAL_STRINGL(output_string.ptr, output_string.size, 1);
+		RETVAL_STRINGL(output_string.ptr, output_string.size, 0);
+		invalidate_string(&output_string);
 	} else {
 		RETVAL_TRUE;
 	}
@@ -743,9 +752,15 @@ static int init_string(struct string_buffer *string)
 	return 1;
 }
 
+static void invalidate_string(struct string_buffer *string)
+{
+	string->ptr = NULL;
+}
+
 static void free_string(struct string_buffer *string)
 {
-	efree(string->ptr);
+	if (string->ptr)
+		efree(string->ptr);
 }
 
 static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal TSRMLS_DC)
