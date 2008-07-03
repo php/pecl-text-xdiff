@@ -98,12 +98,14 @@ function_entry xdiff_functions[] = {
 	PHP_FE(xdiff_file_patch_binary,		NULL)
 	PHP_FE(xdiff_file_merge3,			NULL)
 	PHP_FE(xdiff_file_rabdiff,			NULL)
+	PHP_FE(xdiff_file_bdiff_size,		NULL)
 	PHP_FE(xdiff_string_diff,			NULL)
 	PHP_FE(xdiff_string_diff_binary,	NULL)
 	PHP_FE(xdiff_string_patch,			xdiff_arg_force_ref)
 	PHP_FE(xdiff_string_patch_binary,	NULL)
 	PHP_FE(xdiff_string_merge3,			xdiff_arg_force_ref)
 	PHP_FE(xdiff_string_rabdiff,		NULL)
+	PHP_FE(xdiff_string_bdiff_size,		NULL)
 	{NULL, NULL, NULL}
 };
 /* }}} */
@@ -368,6 +370,70 @@ PHP_FUNCTION(xdiff_file_rabdiff)
 	
 out_stream_close:
 	php_stream_close(output_stream);
+out:
+	return;
+}
+/* }}} */
+
+/* {{{ proto bool xdiff_file_bdiff_size(string file1, string file2, string dest)
+ */
+PHP_FUNCTION(xdiff_file_bdiff_size)
+{
+	char *filepath;
+	int size, retval;
+	long result;
+	mmfile_t file;
+
+	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filepath, &size) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	RETVAL_FALSE;
+
+	retval = load_mm_file(filepath, &file TSRMLS_CC);
+	if (!retval)
+		goto out;
+		
+	result = xdl_bdiff_tgsize(&file);
+	if (result < 0)
+		goto out_free_mmfile;
+	
+	RETVAL_LONG(result);
+	
+out_free_mmfile:
+	xdl_free_mmfile(&file);
+out:
+	return;
+}
+/* }}} */
+
+/* {{{ proto bool xdiff_string_bdiff_size(string file1, string file2, string dest)
+ */
+PHP_FUNCTION(xdiff_string_bdiff_size)
+{
+	char *filepath;
+	int size, retval;
+	long result;
+	mmfile_t file;
+
+	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filepath, &size) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	RETVAL_FALSE;
+
+	retval = load_into_mm_file(filepath, &file TSRMLS_CC);
+	if (!retval)
+		goto out;
+		
+	result = xdl_bdiff_tgsize(&file);
+	if (result < 0)
+		goto out_free_mmfile;
+	
+	RETVAL_LONG(result);
+	
+out_free_mmfile:
+	xdl_free_mmfile(&file);
 out:
 	return;
 }

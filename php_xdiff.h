@@ -45,6 +45,7 @@ PHP_FUNCTION(xdiff_file_patch);
 PHP_FUNCTION(xdiff_file_patch_binary);
 PHP_FUNCTION(xdiff_file_merge3);
 PHP_FUNCTION(xdiff_file_rabdiff);
+PHP_FUNCTION(xdiff_file_bdiff_size);
 
 PHP_FUNCTION(xdiff_string_diff);
 PHP_FUNCTION(xdiff_string_diff_binary);
@@ -52,6 +53,7 @@ PHP_FUNCTION(xdiff_string_patch);
 PHP_FUNCTION(xdiff_string_patch_binary);
 PHP_FUNCTION(xdiff_string_merge3);
 PHP_FUNCTION(xdiff_string_rabdiff);
+PHP_FUNCTION(xdiff_string_bdiff_size);
 
 #endif	/* PHP_XDIFF_H */
 
