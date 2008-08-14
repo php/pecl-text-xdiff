@@ -426,7 +426,7 @@ PHP_FUNCTION(xdiff_string_bdiff_size)
 
 	RETVAL_FALSE;
 
-	retval = load_into_mm_file(patch, size, &file TSRMLS_CC);
+	retval = load_into_mm_file(patch, size, &file);
 	if (!retval)
 		goto out;
 		
