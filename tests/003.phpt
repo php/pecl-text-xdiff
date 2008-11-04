@@ -2,14 +2,11 @@
 xdiff_file_diff()
 --SKIPIF--
 <?php if (!extension_loaded("xdiff")) print "skip"; ?>
---POST--
---GET--
---INI--
 --FILE--
 <?php 
-xdiff_file_diff('tests/file.1', 'tests/file.2', 'tests/file.d', 1);
-readfile('tests/file.d');
-unlink('tests/file.d');
+xdiff_file_diff(__DIR__ . '/file.1', __DIR__ . '/file.2', __DIR__ . '/file.d', 1);
+readfile(__DIR__ . '/file.d');
+unlink(__DIR__ . '/file.d');
 ?>
 --EXPECT--
 @@ -3,3 +3,3 @@

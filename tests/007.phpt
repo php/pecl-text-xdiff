@@ -2,16 +2,13 @@
 xdiff_file_patch()
 --SKIPIF--
 <?php if (!extension_loaded("xdiff")) print "skip"; ?>
---POST--
---GET--
---INI--
 --FILE--
 <?php 
-xdiff_file_patch('tests/file.1', 'tests/file.diff', 'tests/file.p');
-$a = file_get_contents('tests/file.2');
-$b = file_get_contents('tests/file.p');
-echo strcmp($a, $b);
-unlink('tests/file.p');
+xdiff_file_patch(__DIR__ . '/file.1', __DIR__ . '/file.diff', __DIR__ . '/file.p');
+$a = file_get_contents(__DIR__ . '/file.2');
+$b = file_get_contents(__DIR__ . '/file.p');
+var_dump(strcmp($a, $b));
+unlink(__DIR__ . '/file.p');
 ?>
 --EXPECT--
-0
+int(0)

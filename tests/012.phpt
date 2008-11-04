@@ -2,16 +2,13 @@
 xdiff_file_rabdiff()
 --SKIPIF--
 <?php if (!extension_loaded("xdiff")) print "skip"; ?>
---POST--
---GET--
---INI--
 --FILE--
 <?php 
-xdiff_file_rabdiff('tests/file.1', 'tests/file.2', 'tests/file.rbd');
-$a = file_get_contents('tests/file.rbd');
-$b = file_get_contents('tests/file.rabdiff');
+xdiff_file_rabdiff(__DIR__ . '/file.1', __DIR__ . '/file.2', __DIR__ . '/file.rbd');
+$a = file_get_contents(__DIR__ . '/file.rbd');
+$b = file_get_contents(__DIR__ . '/file.rabdiff');
 echo strcmp($a, $b);
-unlink('tests/file.rbd');
+unlink(__DIR__ . '/file.rbd');
 ?>
 --EXPECT--
 0

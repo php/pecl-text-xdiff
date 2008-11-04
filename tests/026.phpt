@@ -2,14 +2,11 @@
 xdiff_file_diff() with context = 1
 --SKIPIF--
 <?php if (!extension_loaded("xdiff")) print "skip"; ?>
---POST--
---GET--
---INI--
 --FILE--
 <?php 
-xdiff_file_diff('tests/lorem1.txt', 'tests/lorem2.txt', 'tests/lorem.tmp', 1);
-echo strcmp(file_get_contents('tests/context1.patch'), file_get_contents('tests/lorem.tmp'));
-unlink('tests/lorem.tmp');
+xdiff_file_diff(__DIR__ . '/lorem1.txt', __DIR__ . '/lorem2.txt', __DIR__ . '/lorem.tmp', 1);
+echo strcmp(file_get_contents(__DIR__ . '/context1.patch'), file_get_contents(__DIR__ . '/lorem.tmp'));
+unlink(__DIR__ . '/lorem.tmp');
 ?>
 --EXPECT--
 0

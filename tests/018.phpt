@@ -2,16 +2,13 @@
 xdiff_file_rabdiff() with binary data
 --SKIPIF--
 <?php if (!extension_loaded("xdiff")) print "skip"; ?>
---POST--
---GET--
---INI--
 --FILE--
 <?php 
-xdiff_file_rabdiff('tests/zend.png', 'tests/php.png', 'tests/logo.tmp');
-$a = file_get_contents('tests/logo.tmp');
-$b = file_get_contents('tests/logo.rabdiff');
+xdiff_file_rabdiff(__DIR__ . '/zend.png', __DIR__ . '/php.png', __DIR__ . '/logo.tmp');
+$a = file_get_contents(__DIR__ . '/logo.tmp');
+$b = file_get_contents(__DIR__ . '/logo.rabdiff');
 echo strcmp($a, $b);
-unlink('tests/logo.tmp');
+unlink(__DIR__ . '/logo.tmp');
 ?>
 --EXPECT--
 0

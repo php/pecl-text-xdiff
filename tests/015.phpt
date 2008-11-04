@@ -2,16 +2,13 @@
 xdiff_file_patch_binary() with rabdiff patch
 --SKIPIF--
 <?php if (!extension_loaded("xdiff")) print "skip"; ?>
---POST--
---GET--
---INI--
 --FILE--
 <?php 
-xdiff_file_patch_binary('tests/file.1', 'tests/file.rabdiff', 'tests/file.p');
-$a = file_get_contents('tests/file.2');
-$b = file_get_contents('tests/file.p');
+xdiff_file_patch_binary(__DIR__ . '/file.1', __DIR__ . '/file.rabdiff', __DIR__ . '/file.p');
+$a = file_get_contents(__DIR__ . '/file.2');
+$b = file_get_contents(__DIR__ . '/file.p');
 echo strcmp($a, $b);
-unlink('tests/file.p');
+unlink(__DIR__ . '/file.p');
 ?>
 --EXPECT--
 0
