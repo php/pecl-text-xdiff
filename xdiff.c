@@ -38,7 +38,6 @@ struct string_buffer {
 };
 
 #ifdef ZEND_ENGINE_2
-static
     ZEND_BEGIN_ARG_INFO(xdiff_arg_force_ref, 0)
         ZEND_ARG_PASS_INFO(0)
         ZEND_ARG_PASS_INFO(0)
