@@ -14,10 +14,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mg@iceni.pl</email>
   <active>yes</active>
  </lead>
- <date>2008-07-03</date>
- <time>18:44:31</time>
+ <date>2009-10-18</date>
+ <time>16:13:00</time>
  <version>
-  <release>1.5.0</release>
+  <release>1.5.1</release>
   <api>1.5</api>
  </version>
  <stability>
@@ -25,7 +25,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <api>beta</api>
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
- <notes>New functions added. Memory optimizations. Better handling of out of memory situations.
+ <notes>Fix for #16566.
  </notes>
  <contents>
   <dir name="/">
@@ -73,6 +73,19 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <configureoption default="autodetect" name="with-xdiff" prompt="libxdiff library installation dir?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.5.0</release>
+    <api>1.5</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2009-10-18</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>New functions added. Memory optimizations. Better handling of out of memory situations.</notes>
+  </release>
   <release>
    <version>
     <release>1.4.1</release>
