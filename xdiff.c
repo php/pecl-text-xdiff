@@ -90,7 +90,7 @@ static memallocator_t allocator = { NULL, xdiff_malloc, xdiff_free, xdiff_reallo
  *
  * Every user visible function must have an entry in xdiff_functions[].
  */
-function_entry xdiff_functions[] = {
+zend_function_entry xdiff_functions[] = {
 	PHP_FE(xdiff_file_diff,				NULL)
 	PHP_FE(xdiff_file_bdiff,			NULL)
 	PHP_FE(xdiff_file_patch,			NULL)
