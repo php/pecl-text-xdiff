@@ -76,7 +76,9 @@ static void *xdiff_malloc(void *foo, unsigned int size)
 
 static void xdiff_free(void *foo, void *ptr)
 {
-	efree(ptr);
+	if (ptr) {
+		efree(ptr);
+	}
 }
 
 static void *xdiff_realloc(void *foo, void *ptr, unsigned int nsize)
@@ -797,6 +799,9 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 		string->ptr = new_ptr;
 		memcpy(string->ptr + string->size, buffer[i].ptr, buffer[i].size);
 		string->size += buffer[i].size;
+	}
+	if (array_size) {
+		string->ptr[string->size] = '\0';
 	}
 
 	return 0;
