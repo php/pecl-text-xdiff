@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.6.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+ <name>xdiff</name>
+ <channel>pecl.php.net</channel>
+ <summary>File differences/patches.</summary>
+ <description>This extension creates and applies patches to both text and binary files.
+ </description>
+ <lead>
+  <name>Marcin Gibula</name>
+  <user>mg</user>
+  <email>mg@iceni.pl</email>
+  <active>yes</active>
+ </lead>
+ <date>2012-06-11</date>
+ <time>21:04:00</time>
+ <version>
+  <release>1.5.2</release>
+  <api>1.5</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP License</license>
+ <notes>- Fixed bug #61358 ("Warning: String is not zero-terminated" failing tests w/PHP 5.3.10)
+- Fixed build on PHP 5.4+
+ </notes>
+ <contents>
+  <dir name="/">
+   <dir name="tests">
+    <file name="001.phpt" role="test" />
+    <file name="002.phpt" role="test" />
+    <file name="003.phpt" role="test" />
+    <file name="004.phpt" role="test" />
+    <file name="005.phpt" role="test" />
+    <file name="006.phpt" role="test" />
+    <file name="007.phpt" role="test" />
+    <file name="008.phpt" role="test" />
+    <file name="009.phpt" role="test" />
+    <file name="010.phpt" role="test" />
+    <file name="011.phpt" role="test" />
+    <file name="file.1" role="test" />
+    <file name="file.2" role="test" />
+    <file name="file.bdiff" role="test" />
+    <file name="file_test.diff" role="test" />
+    <file name="merge1.h" role="test" />
+    <file name="merge2.h" role="test" />
+    <file name="merge3.h" role="test" />
+    <file name="merge4.h" role="test" />
+   </dir> <!-- //tests -->
+   <file name="config.m4" role="src" />
+   <file name="config.w32" role="src" />
+   <file name="CREDITS" role="doc" />
+   <file name="php_xdiff.h" role="src" />
+   <file name="README.API" role="doc" />
+   <file name="xdiff.c" role="src" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>4.0.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>xdiff</providesextension>
+ <extsrcrelease>
+  <configureoption default="autodetect" name="with-xdiff" prompt="libxdiff library installation dir?" />
+ </extsrcrelease>
+ <changelog>
+  <release>
+   <version>
+    <release>1.5.1</release>
+    <api>1.5</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2009-10-18</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fix for #16566.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.5.0</release>
+    <api>1.5</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <date>2009-10-18</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>New functions added. Memory optimizations. Better handling of out of memory situations.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.4.1</release>
+    <api>1.4</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2008-07-01</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fixes for #7215, #7422 and #8227.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.4</release>
+    <api>1.4</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2005-11-14</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fixed bug #5064.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.3</release>
+    <api>1.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2005-05-09</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fix compile error.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2</release>
+    <api>1.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-11-09</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fix libxdiff 0.9 crash. Force last parameters of xdiff_string_patch and xdiff_string_merge3 to be passed by reference.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.1</release>
+    <api>1.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-03-21</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fix FreeBSD build.</notes>
+  </release>
+  <release>
+   <version>
+    <release>1.0</release>
+    <api>1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-02-09</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Add support to memory_limit (libxdiff >= 0.6 required).</notes>
+  </release>
+  <release>
+   <version>
+    <release>0.3</release>
+    <api>0.3</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-01-10</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Win32 build fixes.</notes>
+  </release>
+  <release>
+   <version>
+    <release>0.2</release>
+    <api>0.2</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <date>2004-01-08</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Initial release.</notes>
+  </release>
+ </changelog>
+</package>
