@@ -26,7 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>- Fixed bug #61358 ("Warning: String is not zero-terminated" failing tests w/PHP 5.3.10)
-Fixed build on PHP 5.4+
+- Fixed build on PHP 5.4+
  </notes>
  <contents>
   <dir name="/">
