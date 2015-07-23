@@ -37,16 +37,12 @@ struct string_buffer {
 	unsigned long size;
 };
 
-#ifdef ZEND_ENGINE_2
-    ZEND_BEGIN_ARG_INFO(xdiff_arg_force_ref, 0)
-        ZEND_ARG_PASS_INFO(0)
-        ZEND_ARG_PASS_INFO(0)
-        ZEND_ARG_PASS_INFO(0)
-        ZEND_ARG_PASS_INFO(1)
-    ZEND_END_ARG_INFO()
-#else
-static unsigned char xdiff_arg_force_ref[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
-#endif
+ ZEND_BEGIN_ARG_INFO(xdiff_arg_force_ref, 0)
+     ZEND_ARG_PASS_INFO(0)
+     ZEND_ARG_PASS_INFO(0)
+     ZEND_ARG_PASS_INFO(0)
+     ZEND_ARG_PASS_INFO(1)
+ ZEND_END_ARG_INFO()
 
 static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC);
 static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *dest);
@@ -169,14 +165,14 @@ PHP_MINFO_FUNCTION(xdiff)
  */
 PHP_FUNCTION(xdiff_string_diff)
 {
-	char *str1, *str2;
-	int size1, size2, retval, minimal = 0;
+	zend_string *str1, *str2;
+	int retval, minimal = 0;
 	long context = 3;
 	xdemitcb_t output;
 	struct string_buffer string;
 
-	if (ZEND_NUM_ARGS() < 2 || ZEND_NUM_ARGS() > 4 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|lb", &str1, &size1, &str2, &size2, &context, &minimal) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS|lb", &str1, &str2, &context, &minimal) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -188,14 +184,8 @@ PHP_FUNCTION(xdiff_string_diff)
 	output.priv= &string;
 	output.outf = append_string;
 
-	retval = make_diff_str(str1, size1, str2, size2, &output, context, minimal);
-	if (!retval)
-		goto out_free_string;
-
-	RETVAL_STRINGL(string.ptr, string.size, 0);
-	invalidate_string(&string);
-
-out_free_string:
+	make_diff_str(str1->val, str1->len, str2->val, str2->len, &output, context, minimal);
+	RETVAL_STRINGL(string.ptr, string.size);
 	free_string(&string);
 out:
 	return;
@@ -206,26 +196,26 @@ out:
  */
 PHP_FUNCTION(xdiff_file_diff)
 {
-	char *filepath1, *filepath2, *dest;
-	int size, retval, minimal = 0;
+	zend_string *filepath1, *filepath2, *dest;
+	int retval, minimal = 0;
 	long context = 3;
 	xdemitcb_t output;
 	php_stream *output_stream;
 
-	if (ZEND_NUM_ARGS() < 3 || ZEND_NUM_ARGS() > 5 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|lb", &filepath1, &size, &filepath2, &size, &dest, &size, &context, &minimal) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SSS|lb", &filepath1, &filepath2, &dest, &context, &minimal) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	output_stream = php_stream_open_wrapper(dest, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	output_stream = php_stream_open_wrapper(dest->val, "wb", REPORT_ERRORS, NULL);
 	if (!output_stream)
 		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
-	retval = make_diff(filepath1, filepath2, &output, context, minimal TSRMLS_CC);
+	retval = make_diff(filepath1->val, filepath2->val, &output, context, minimal TSRMLS_CC);
 	if (!retval)
 		goto out_stream_close;
 
@@ -242,13 +232,13 @@ out:
  */
 PHP_FUNCTION(xdiff_string_bdiff)
 {
-	char *str1, *str2;
-	int size1, size2, retval;
+	zend_string *str1, *str2;
+	int retval;
 	xdemitcb_t output;
 	struct string_buffer string;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &str1, &size1, &str2, &size2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS", &str1, &str2) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -260,15 +250,10 @@ PHP_FUNCTION(xdiff_string_bdiff)
 	output.priv= &string;
 	output.outf = append_string;
 
-	retval = make_bdiff_str(str1, size1, str2, size2, &output);
-	if (!retval)
-		goto out_free_string;
-
-	RETVAL_STRINGL(string.ptr, string.size, 0);
-	invalidate_string(&string);
-
-out_free_string:
+	make_bdiff_str(str1->val, str1->len, str2->val, str2->len, &output);
+	RETVAL_STRINGL(string.ptr, string.size);
 	free_string(&string);
+
 out:
 	return;
 }
@@ -278,30 +263,30 @@ out:
  */
 PHP_FUNCTION(xdiff_file_bdiff)
 {
-	char *filepath1, *filepath2, *result;
-	int size, retval;
+	zend_string *filepath1, *filepath2, *result;
+	int retval;
 	xdemitcb_t output;
 	php_stream *output_stream;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", &filepath1, &size, &filepath2, &size, &result, &size) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SSS", &filepath1, &filepath2, &result) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	output_stream = php_stream_open_wrapper(result, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	output_stream = php_stream_open_wrapper(result->val, "wb", REPORT_ERRORS, NULL);
 	if (!output_stream)
 		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
-	retval = make_bdiff(filepath1, filepath2, &output TSRMLS_CC);
+	retval = make_bdiff(filepath1->val, filepath2->val, &output TSRMLS_CC);
 	if (!retval)
 		goto out_stream_close;
 
 	RETVAL_TRUE;
-	
+
 out_stream_close:
 	php_stream_close(output_stream);
 out:
@@ -313,13 +298,13 @@ out:
  */
 PHP_FUNCTION(xdiff_string_rabdiff)
 {
-	char *str1, *str2;
-	int size1, size2, retval;
+	zend_string *str1, *str2;
+	int retval;
 	xdemitcb_t output;
 	struct string_buffer string;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &str1, &size1, &str2, &size2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS", &str1, &str2) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -331,15 +316,10 @@ PHP_FUNCTION(xdiff_string_rabdiff)
 	output.priv= &string;
 	output.outf = append_string;
 
-	retval = make_rabdiff_str(str1, size1, str2, size2, &output);
-	if (!retval)
-		goto out_free_string;
-
-	RETVAL_STRINGL(string.ptr, string.size, 0);
-	invalidate_string(&string);
-
-out_free_string:
+	make_rabdiff_str(str1->val, str1->len, str2->val, str2->len, &output);
+	RETVAL_STRINGL(string.ptr, string.size);
 	free_string(&string);
+
 out:
 	return;
 }
@@ -349,30 +329,30 @@ out:
  */
 PHP_FUNCTION(xdiff_file_rabdiff)
 {
-	char *filepath1, *filepath2, *result;
-	int size, retval;
+	zend_string *filepath1, *filepath2, *result;
+	int retval;
 	xdemitcb_t output;
 	php_stream *output_stream;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", &filepath1, &size, &filepath2, &size, &result, &size) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SSS", &filepath1, &filepath2, &result) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	output_stream = php_stream_open_wrapper(result, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	output_stream = php_stream_open_wrapper(result->val, "wb", REPORT_ERRORS, NULL);
 	if (!output_stream)
 		goto out;
 
 	output.priv = output_stream;
 	output.outf = append_stream;
 
-	retval = make_rabdiff(filepath1, filepath2, &output TSRMLS_CC);
+	retval = make_rabdiff(filepath1->val, filepath2->val, &output TSRMLS_CC);
 	if (!retval)
 		goto out_stream_close;
 
 	RETVAL_TRUE;
-	
+
 out_stream_close:
 	php_stream_close(output_stream);
 out:
@@ -389,8 +369,8 @@ PHP_FUNCTION(xdiff_file_bdiff_size)
 	long result;
 	mmfile_t file;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filepath, &size) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filepath, &size) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -398,13 +378,13 @@ PHP_FUNCTION(xdiff_file_bdiff_size)
 	retval = load_mm_file(filepath, &file TSRMLS_CC);
 	if (!retval)
 		goto out;
-		
+
 	result = xdl_bdiff_tgsize(&file);
 	if (result < 0)
 		goto out_free_mmfile;
-	
+
 	RETVAL_LONG(result);
-	
+
 out_free_mmfile:
 	xdl_free_mmfile(&file);
 out:
@@ -421,8 +401,8 @@ PHP_FUNCTION(xdiff_string_bdiff_size)
 	long result;
 	mmfile_t file;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &patch, &size) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &patch, &size) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -430,13 +410,13 @@ PHP_FUNCTION(xdiff_string_bdiff_size)
 	retval = load_into_mm_file(patch, size, &file);
 	if (!retval)
 		goto out;
-		
+
 	result = xdl_bdiff_tgsize(&file);
 	if (result < 0)
 		goto out_free_mmfile;
-	
+
 	RETVAL_LONG(result);
-	
+
 out_free_mmfile:
 	xdl_free_mmfile(&file);
 out:
@@ -449,18 +429,18 @@ out:
 PHP_FUNCTION(xdiff_file_patch)
 {
 	php_stream *output_stream;
-	char *src_path, *patch_path, *dest_path;
-	int retval, size, flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
+	zend_string *src_path, *patch_path, *dest_path;
+	int retval, flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
 	xdemitcb_t output, error_output;
 	struct string_buffer error_string;
 
-	if (ZEND_NUM_ARGS() < 3 || ZEND_NUM_ARGS() > 4 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss|l", &src_path, &size, &patch_path, &size, &dest_path, &size, &flags) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SSS|l", &src_path, &patch_path, &dest_path, &flags) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	output_stream = php_stream_open_wrapper(dest_path, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	output_stream = php_stream_open_wrapper(dest_path->val, "wb", REPORT_ERRORS, NULL);
 	if (!output_stream)
 		goto out;
 
@@ -474,17 +454,16 @@ PHP_FUNCTION(xdiff_file_patch)
 	error_output.priv= &error_string;
 	error_output.outf = append_string;
 
-	retval = make_patch(src_path, patch_path, &output, &error_output, flags TSRMLS_CC);
+	retval = make_patch(src_path->val, patch_path->val, &output, &error_output, flags TSRMLS_CC);
 	if (retval < 0)
 		goto out_free_string;
 
 	if (error_string.size > 0) {
-		RETVAL_STRINGL(error_string.ptr, error_string.size, 0);
-		invalidate_string(&error_string);
+		RETVAL_STRINGL(error_string.ptr, error_string.size);
 	} else {
 		RETVAL_TRUE;
 	}
-	
+
 out_free_string:
 	free_string(&error_string);
 out_stream_close:
@@ -499,14 +478,14 @@ out:
 PHP_FUNCTION(xdiff_string_patch)
 {
 	zval *error_ref = NULL;
-	char *src, *patch;
-	int retval, size1, size2;
+	zend_string *src, *patch;
+	int retval;
 	long flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
 	xdemitcb_t output, error_output;
 	struct string_buffer output_string, error_string;
 
-	if (ZEND_NUM_ARGS() < 2 || ZEND_NUM_ARGS() > 4 || zend_parse_parameters_ex(0, ZEND_NUM_ARGS() TSRMLS_CC, "ss|lz", &src, &size1, &patch, &size2, &flags, &error_ref) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters_ex(0, ZEND_NUM_ARGS() TSRMLS_CC, "SS|lz", &src, &patch, &flags, &error_ref) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -525,17 +504,16 @@ PHP_FUNCTION(xdiff_string_patch)
 	error_output.priv= &error_string;
 	error_output.outf = append_string;
 
-	retval = make_patch_str(src, size1, patch, size2, &output, &error_output, flags);
+	retval = make_patch_str(src->val, src->len, patch->val, patch->len, &output, &error_output, flags);
 	if (retval < 0)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
-		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size, 1);
+		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
 	if (output_string.size > 0) {
-		RETVAL_STRINGL(output_string.ptr, output_string.size, 0);
-		invalidate_string(&output_string);
+		RETVAL_STRINGL(output_string.ptr, output_string.size);
 	} else {
 		RETVAL_EMPTY_STRING();
 	}
@@ -554,29 +532,29 @@ out:
 PHP_FUNCTION(xdiff_file_bpatch)
 {
 	php_stream *output_stream;
-	char *src_path, *patch_path, *dest_path;
-	int retval, size;
+	zend_string *src_path, *patch_path, *dest_path;
+	int retval;
 	xdemitcb_t output;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sss", &src_path, &size, &patch_path, &size, &dest_path, &size) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SSS", &src_path, &patch_path, &dest_path) == FAILURE) {
+		RETURN_FALSE;
 	}
-	
+
 	RETVAL_FALSE;
 
-	output_stream = php_stream_open_wrapper(dest_path, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	output_stream = php_stream_open_wrapper(dest_path->val, "wb", REPORT_ERRORS, NULL);
 	if (!output_stream)
 		goto out;
 
 	output.outf = append_stream;
 	output.priv = output_stream;
 
-	retval = make_bpatch(src_path, patch_path, &output TSRMLS_CC);
+	retval = make_bpatch(src_path->val, patch_path->val, &output TSRMLS_CC);
 	php_stream_close(output_stream);
 
 	if (retval == 0)
 		RETVAL_TRUE;
-		
+
 out:
 	return;
 }
@@ -586,13 +564,13 @@ out:
  */
 PHP_FUNCTION(xdiff_string_bpatch)
 {
-	char *src, *patch;
-	int retval, size1, size2;
+	zend_string *src, *patch;
+	int retval;
 	xdemitcb_t output;
 	struct string_buffer output_string;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &src, &size1, &patch, &size2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SS", &src, &patch) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
@@ -604,14 +582,13 @@ PHP_FUNCTION(xdiff_string_bpatch)
 	output.priv = &output_string;
 	output.outf = append_string;
 
-	retval = make_bpatch_str(src, size1, patch, size2, &output);
-	if (retval < 0) 
+	retval = make_bpatch_str(src->val, src->len, patch->val, patch->len, &output);
+	if (retval < 0)
 		goto out_free_string;
 
-	RETVAL_STRINGL(output_string.ptr, output_string.size, 0);
-	invalidate_string(&output_string);
-	
-out_free_string:	
+	RETVAL_STRINGL(output_string.ptr, output_string.size);
+
+out_free_string:
 	free_string(&output_string);
 out:
 	return;
@@ -622,19 +599,19 @@ out:
  */
 PHP_FUNCTION(xdiff_file_merge3)
 {
-	char *file1, *file2, *file3, *dest;
+	zend_string *file1, *file2, *file3, *dest;
 	php_stream *output_stream;
 	struct string_buffer string;
 	xdemitcb_t output, error_output;
-	int retval, size;
+	int retval;
 
-	if (ZEND_NUM_ARGS() != 4 || zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss", &file1, &size, &file2, &size, &file3, &size, &dest, &size) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "SSSS", &file1, &file2, &file3, &dest) == FAILURE) {
+		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	output_stream = php_stream_open_wrapper(dest, "wb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	output_stream = php_stream_open_wrapper(dest->val, "wb", REPORT_ERRORS, NULL);
 	if (!output_stream)
 		goto out;
 
@@ -648,17 +625,16 @@ PHP_FUNCTION(xdiff_file_merge3)
 	error_output.priv = &string;
 	error_output.outf = append_string;
 
-	retval = make_merge3(file1, file2, file3, &output, &error_output TSRMLS_CC);
+	retval = make_merge3(file1->val, file2->val, file3->val, &output, &error_output TSRMLS_CC);
 	if (!retval)
 		goto out_free_string;
 
 	if (string.size > 0) {
-		RETVAL_STRINGL(string.ptr, string.size, 0);
-		invalidate_string(&string);
+		RETVAL_STRINGL(string.ptr, string.size);
 	} else {
 		RETVAL_TRUE;
 	}
-	
+
 out_free_string:
 	free_string(&string);
 out_stream_close:
@@ -673,15 +649,15 @@ out:
 PHP_FUNCTION(xdiff_string_merge3)
 {
 	zval *error_ref = NULL;
-	char *file1, *file2, *file3;
+	zend_string *file1, *file2, *file3;
 	struct string_buffer output_string, error_string;
 	xdemitcb_t output, error_output;
-	int retval, size1, size2, size3;
+	int retval;
 
-	if (ZEND_NUM_ARGS() < 3 || ZEND_NUM_ARGS() > 4 || zend_parse_parameters_ex(0, ZEND_NUM_ARGS() TSRMLS_CC, "sss|z", &file1, &size1, &file2, &size2, &file3, &size3, &error_ref) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (zend_parse_parameters_ex(0, ZEND_NUM_ARGS() TSRMLS_CC, "SSS|z", &file1,  &file2, &file3, &error_ref) == FAILURE) {
+		RETURN_FALSE;
 	}
-	
+
 	RETVAL_FALSE;
 
 	retval = init_string(&output_string);
@@ -698,17 +674,16 @@ PHP_FUNCTION(xdiff_string_merge3)
 	error_output.priv = &error_string;
 	error_output.outf = append_string;
 
-	retval = make_merge3_str(file1, size1, file2, size2, file3, size3, &output, &error_output);
+	retval = make_merge3_str(file1->val, file1->len, file2->val, file2->len, file3->val, file3->len, &output, &error_output);
 	if (!retval)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
-		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size, 1);
+		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
 	if (output_string.size > 0) {
-		RETVAL_STRINGL(output_string.ptr, output_string.size, 0);
-		invalidate_string(&output_string);
+		RETVAL_STRINGL(output_string.ptr, output_string.size);
 	} else {
 		RETVAL_TRUE;
 	}
@@ -730,7 +705,7 @@ static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC)
 	php_stream *src;
 	php_stream_statbuf stat;
 
-	src = php_stream_open_wrapper((char *) filepath, "rb", REPORT_ERRORS | ENFORCE_SAFE_MODE, NULL);
+	src = php_stream_open_wrapper((char *) filepath, "rb", REPORT_ERRORS, NULL);
 	if (!src)
 		goto out;
 
@@ -752,7 +727,7 @@ static int load_mm_file(const char *filepath, mmfile_t *dest TSRMLS_DC)
 	php_stream_close(src);
 
 	return 1;
-	
+
 out_free_mmfile:
 	xdl_free_mmfile(dest);
 out_stream_close:
@@ -795,7 +770,7 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 			efree(string->ptr);
 			return -1;
 		}
-		
+
 		string->ptr = new_ptr;
 		memcpy(string->ptr + string->size, buffer[i].ptr, buffer[i].size);
 		string->size += buffer[i].size;
@@ -816,7 +791,7 @@ static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size)
 	for (i = 0; i < array_size; i++) {
 		php_stream_write(stream, buffer[i].ptr, buffer[i].size);
 	}
-	
+
 	return 1;
 }
 
@@ -828,7 +803,7 @@ static int init_string(struct string_buffer *string)
 
 	string->size = 0;
 	memset(string->ptr, 0, 1);
-	
+
 	return 1;
 }
 
@@ -1039,12 +1014,12 @@ static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xde
 		goto out_free_mmfile2;
 
 	result = 1;
-	
+
 out_free_mmfile2:
 	xdl_free_mmfile(&patch);
 out_free_mmfile:
 	xdl_free_mmfile(&file);
-out:	
+out:
 	return result;
 }
 
@@ -1066,12 +1041,12 @@ static int make_patch_str(char *file, int size1, char *patch, int size2, xdemitc
 		goto out_free_mmfile2;
 
 	result = 1;
-	
+
 out_free_mmfile2:
 	xdl_free_mmfile(&patch_mm);
 out_free_mmfile:
 	xdl_free_mmfile(&file_mm);
-out:	
+out:
 	return result;
 }
 
@@ -1093,12 +1068,12 @@ static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output TSR
 		goto out_free_mmfile2;
 
 	result = 1;
-	
+
 out_free_mmfile2:
 	xdl_free_mmfile(&patch_mm);
 out_free_mmfile:
 	xdl_free_mmfile(&file_mm);
-out:	
+out:
 	return result;
 }
 
@@ -1120,12 +1095,12 @@ static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemit
 		goto out_free_mmfile2;
 
 	result = 1;
-	
+
 out_free_mmfile2:
 	xdl_free_mmfile(&patch_mm);
 out_free_mmfile:
 	xdl_free_mmfile(&file_mm);
-out:	
+out:
 	return result;
 }
 
@@ -1151,7 +1126,7 @@ static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemit
 		goto out_free_mmfile3;
 
 	result = 1;
-	
+
 out_free_mmfile3:
 	xdl_free_mmfile(&file3);
 out_free_mmfile2:
