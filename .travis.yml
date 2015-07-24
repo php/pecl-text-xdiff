@@ -18,5 +18,5 @@ script:
     run-tests.php -n
     -d extension_dir=modules -d extension=xdiff.so --show-diff
     tests
-  - gcov --object-directory .libs xdiff.c
+  - gcov --object-directory .libs *.c
   - bash <(curl -s https://codecov.io/bash)
