@@ -364,18 +364,18 @@ out:
  */
 PHP_FUNCTION(xdiff_file_bdiff_size)
 {
-	char *filepath;
-	int size, retval;
+	zend_string *filepath;
+	int retval;
 	long result;
 	mmfile_t file;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filepath, &size) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &filepath) == FAILURE) {
 		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	retval = load_mm_file(filepath, &file TSRMLS_CC);
+	retval = load_mm_file(filepath->val, &file TSRMLS_CC);
 	if (!retval)
 		goto out;
 
@@ -396,18 +396,18 @@ out:
  */
 PHP_FUNCTION(xdiff_string_bdiff_size)
 {
-	char *patch;
-	int size, retval;
+	zend_string *patch;
+	int retval;
 	long result;
 	mmfile_t file;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &patch, &size) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &patch) == FAILURE) {
 		RETURN_FALSE;
 	}
 
 	RETVAL_FALSE;
 
-	retval = load_into_mm_file(patch, size, &file);
+	retval = load_into_mm_file(patch->val, patch->len, &file);
 	if (!retval)
 		goto out;
 
@@ -430,7 +430,8 @@ PHP_FUNCTION(xdiff_file_patch)
 {
 	php_stream *output_stream;
 	zend_string *src_path, *patch_path, *dest_path;
-	int retval, flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
+	int retval;
+	long flags = XDL_PATCH_NORMAL;	/* DIFF_PATCH_NORMAL */
 	xdemitcb_t output, error_output;
 	struct string_buffer error_string;
 
