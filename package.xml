@@ -20,10 +20,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>sean@siobud.com</email>
   <active>yes</active>
  </lead>
- <date>2015-11-23</date>
+ <date>2016-05-17</date>
  <version>
-  <release>2.0.0-dev</release>
-  <api>2.0-dev</api>
+  <release>2.0.1</release>
+  <api>2.0v</api>
  </version>
  <stability>
   <release>stable</release>
@@ -31,7 +31,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- PHP 7 Release
+- Update License to PHP 3.1
  </notes>
  <contents>
   <dir name="/">
@@ -59,6 +59,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />
    <file name="CREDITS" role="doc" />
+   <file name="LICENSE" role="doc" />
    <file name="php_xdiff.h" role="src" />
    <file name="README.API" role="doc" />
    <file name="xdiff.c" role="src" />
@@ -79,6 +80,19 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <configureoption default="autodetect" name="with-xdiff" prompt="libxdiff library installation dir?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <version>
+    <release>2.0.1</release>
+    <api>2.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>beta</api>
+   </stability>
+   <date>2016-05-17</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Update License to PHP 3.1</notes>
+  </release>
   <release>
    <version>
     <release>2.0.0</release>
