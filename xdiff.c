@@ -27,7 +27,14 @@
 #include "ext/standard/info.h"
 #include "php_xdiff.h"
 
+#ifdef _MSC_VER
+/* libxdiff is compiled with /Zp1 */
+#pragma pack(push, 1)
+#endif
 #include <xdiff.h>
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif
 
 /* Not exported by header file */
 extern char libxdiff_version[];
