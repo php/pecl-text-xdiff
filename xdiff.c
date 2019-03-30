@@ -458,7 +458,7 @@ PHP_FUNCTION(xdiff_file_patch)
 	error_output.outf = append_string;
 
 	retval = make_patch(src_path->val, patch_path->val, &output, &error_output, flags TSRMLS_CC);
-	if (retval < 0)
+	if (!retval)
 		goto out_free_string;
 
 	if (error_string.size > 0) {
@@ -508,7 +508,7 @@ PHP_FUNCTION(xdiff_string_patch)
 	error_output.outf = append_string;
 
 	retval = make_patch_str(src->val, src->len, patch->val, patch->len, &output, &error_output, flags);
-	if (retval < 0)
+	if (!retval)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
@@ -586,7 +586,7 @@ PHP_FUNCTION(xdiff_string_bpatch)
 	output.outf = append_string;
 
 	retval = make_bpatch_str(src->val, src->len, patch->val, patch->len, &output);
-	if (retval < 0)
+	if (!retval)
 		goto out_free_string;
 
 	RETVAL_STRINGL(output_string.ptr, output_string.size);
