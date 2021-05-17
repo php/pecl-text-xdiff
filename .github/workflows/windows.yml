@@ -1,0 +1,21 @@
+name: Windows build
+on: [push]
+jobs:
+  build:
+    runs-on: windows-2016
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install
+        run: ./.github/workflows/install.ps1
+      - name: Build
+        run: ./.github/workflows/build.ps1
+      - name: Package
+        run: ./.github/workflows/package.ps1
+      - name: test
+        run: ./.github/workflows/test.ps1
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: php_xdiff-dev-7.4-nts-vc15-x64
+          path: ../package
