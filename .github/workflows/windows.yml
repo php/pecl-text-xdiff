@@ -4,7 +4,9 @@ jobs:
   build:
     strategy:
       matrix:
-          arch: [x64, x86]
+        version: [7.4, 7.3]
+        ts: [nts, ts]
+        arch: [x64, x86]
     runs-on: windows-2016
     steps:
       - name: Set git to use LF
@@ -14,15 +16,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install
-        run: ./.github/workflows/install.ps1 -arch ${{matrix.arch}}
+        run: ./.github/workflows/install.ps1 -version ${{matrix.version}} -ts ${{matrix.ts}} -arch ${{matrix.arch}}
       - name: Build
         run: ./.github/workflows/build.ps1 -arch ${{matrix.arch}}
       - name: Package
-        run: ./.github/workflows/package.ps1 -arch ${{matrix.arch}}
-      - name: test
+        run: ./.github/workflows/package.ps1 -ts ${{matrix.ts}} -arch ${{matrix.arch}}
+      - name: Test
         run: ./.github/workflows/test.ps1 -arch ${{matrix.arch}}
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
-          name: php_xdiff-dev-7.4-nts-vc15-${{matrix.arch}}
+          name: php_xdiff-dev-${{matrix.version}}-${{matrix.ts}}-vc15-${{matrix.arch}}
           path: windows_package
