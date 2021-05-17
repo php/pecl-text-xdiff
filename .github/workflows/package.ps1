@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$dir = New-Item "..\package" -ItemType "directory"
+$dir = New-Item "windows_package" -ItemType "directory"
 Copy-Item "..\deps\COPYING.LIBXDIFF" -Destination $dir
 Copy-Item "CREDITS" -Destination $dir
 Copy-Item "LICENSE" -Destination $dir

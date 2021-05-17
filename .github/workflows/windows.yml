@@ -22,4 +22,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: php_xdiff-dev-7.4-nts-vc15-x64
-          path: ../package
+          path: windows_package
