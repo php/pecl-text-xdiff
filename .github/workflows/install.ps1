@@ -1,7 +1,8 @@
 param (
     [Parameter(Mandatory)] $version,
     [Parameter(Mandatory)] $ts,
-    [Parameter(Mandatory)] $arch
+    [Parameter(Mandatory)] $arch,
+    [Parameter(Mandatory)] $libxdiff
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,7 +40,7 @@ Move-Item "php-$phpversion-devel-vc15-$arch" -Destination "php-devel"
 
 # libxdiff
 
-$file = "libxdiff-0.23-vs16-$arch.zip"
+$file = "libxdiff-$libxdiff-vc15-$arch.zip"
 Invoke-WebRequest "https://windows.php.net/downloads/pecl/deps/$file" -OutFile $file
 Expand-Archive $file -DestinationPath "deps"
 Move-Item "deps\COPYING" "deps\COPYING.LIBXDIFF"

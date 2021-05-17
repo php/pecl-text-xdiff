@@ -16,7 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install
-        run: ./.github/workflows/install.ps1 -version ${{matrix.version}} -ts ${{matrix.ts}} -arch ${{matrix.arch}}
+        run: ./.github/workflows/install.ps1 -version ${{matrix.version}} -ts ${{matrix.ts}} -arch ${{matrix.arch}} -libxdiff 0.23
       - name: Build
         run: ./.github/workflows/build.ps1 -arch ${{matrix.arch}}
       - name: Package
