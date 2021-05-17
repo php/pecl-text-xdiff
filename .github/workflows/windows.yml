@@ -16,11 +16,11 @@ jobs:
       - name: Install
         run: ./.github/workflows/install.ps1 -arch ${{matrix.arch}}
       - name: Build
-        run: ./.github/workflows/build.ps1
+        run: ./.github/workflows/build.ps1 -arch ${{matrix.arch}}
       - name: Package
-        run: ./.github/workflows/package.ps1
+        run: ./.github/workflows/package.ps1 -arch ${{matrix.arch}}
       - name: test
-        run: ./.github/workflows/test.ps1
+        run: ./.github/workflows/test.ps1 -arch ${{matrix.arch}}
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
