@@ -2,6 +2,9 @@ name: Windows build
 on: [push]
 jobs:
   build:
+    strategy:
+      matrix:
+          arch: [x64, x86]
     runs-on: windows-2016
     steps:
       - name: Set git to use LF
@@ -11,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install
-        run: ./.github/workflows/install.ps1
+        run: ./.github/workflows/install.ps1 -arch ${{matrix.arch}}
       - name: Build
         run: ./.github/workflows/build.ps1
       - name: Package
@@ -21,5 +24,5 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
-          name: php_xdiff-dev-7.4-nts-vc15-x64
+          name: php_xdiff-dev-7.4-nts-vc15-${{matrix.arch}}
           path: windows_package
