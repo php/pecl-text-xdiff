@@ -50,7 +50,14 @@
 
 #include "xdiff_arginfo.h"
 
+#ifdef PHP_WIN32
+/* libxdiff is compiled with /Zp1 */
+# pragma pack(push, 1)
+#endif
 #include <xdiff.h>
+#ifdef PHP_WIN32
+# pragma pack(pop)
+#endif
 
 /* Not exported by header file */
 extern char libxdiff_version[];
