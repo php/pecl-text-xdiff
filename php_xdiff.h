@@ -24,7 +24,7 @@
 extern zend_module_entry xdiff_module_entry;
 #define phpext_xdiff_ptr &xdiff_module_entry
 
-#define PHP_XDIFF_VERSION "2.1.0"
+#define PHP_XDIFF_VERSION "2.1.1-dev"
 
 #ifdef PHP_WIN32
 #define PHP_XDIFF_API __declspec(dllexport)
