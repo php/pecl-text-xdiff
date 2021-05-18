@@ -20,10 +20,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>sean@siobud.com</email>
   <active>yes</active>
  </lead>
- <date>2016-05-17</date>
+ <date>2021-05-18</date>
  <version>
-  <release>2.0.1-dev</release>
-  <api>2.0-dev</api>
+  <release>2.1.0</release>
+  <api>2.1.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -31,7 +31,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- Update License to PHP 3.1
+- PHP 8 support
+- Drop PHP 5 support
  </notes>
  <contents>
   <dir name="/">
@@ -47,14 +48,47 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <file name="009.phpt" role="test" />
     <file name="010.phpt" role="test" />
     <file name="011.phpt" role="test" />
+    <file name="012.phpt" role="test" />
+    <file name="013.phpt" role="test" />
+    <file name="014.phpt" role="test" />
+    <file name="015.phpt" role="test" />
+    <file name="016.phpt" role="test" />
+    <file name="017.phpt" role="test" />
+    <file name="018.phpt" role="test" />
+    <file name="019.phpt" role="test" />
+    <file name="020.phpt" role="test" />
+    <file name="021.phpt" role="test" />
+    <file name="022.phpt" role="test" />
+    <file name="023.phpt" role="test" />
+    <file name="024.phpt" role="test" />
+    <file name="025.phpt" role="test" />
+    <file name="026.phpt" role="test" />
+    <file name="027.phpt" role="test" />
+    <file name="028.phpt" role="test" />
+    <file name="029.phpt" role="test" />
+    <file name="030.phpt" role="test" />
+    <file name="031.phpt" role="test" />
+    <file name="032.phpt" role="test" />
+    <file name="033.phpt" role="test" />
+    <file name="034.phpt" role="test" />
+    <file name="035.phpt" role="test" />
+    <file name="context1.patch" role="test" />
+    <file name="context5.patch" role="test" />
     <file name="file.1" role="test" />
     <file name="file.2" role="test" />
     <file name="file.bdiff" role="test" />
+    <file name="file.rabdiff" role="test" />
     <file name="file_test.diff" role="test" />
+    <file name="logo.bdiff" role="test" />
+    <file name="logo.rabdiff" role="test" />
+    <file name="lorem1.txt" role="test" />
+    <file name="lorem2.txt" role="test" />
     <file name="merge1.h" role="test" />
     <file name="merge2.h" role="test" />
     <file name="merge3.h" role="test" />
     <file name="merge4.h" role="test" />
+    <file name="php.png" role="test" />
+    <file name="zend.png" role="test" />
    </dir> <!-- //tests -->
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />
@@ -63,6 +97,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
    <file name="php_xdiff.h" role="src" />
    <file name="README.API" role="doc" />
    <file name="xdiff.c" role="src" />
+   <file name="xdiff_arginfo.h" role="src" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
