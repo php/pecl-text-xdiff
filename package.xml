@@ -78,6 +78,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <file name="033.phpt" role="test" />
     <file name="034.phpt" role="test" />
     <file name="035.phpt" role="test" />
+    <file name="bug81552.phpt" role="test" />
     <file name="context1.patch" role="test" />
     <file name="context5.patch" role="test" />
     <file name="file.1" role="test" />
