@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: ec3a63aa4462f084433c3576ad532de87da7f867 */
+ * Stub hash: 90bf8c5e8be3dd1673bdadd36d5cebd846ff425d */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_diff, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, str1, IS_STRING, 0)
@@ -16,24 +16,28 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_xdiff_file_diff, 0, 3, _IS_BOOL,
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, minimal, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_diff_binary, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_bdiff, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, str1, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, str2, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_xdiff_file_diff_binary, 0, 3, _IS_BOOL, 0)
+#define arginfo_xdiff_string_diff_binary arginfo_xdiff_string_bdiff
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_xdiff_file_bdiff, 0, 3, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, file1, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, file2, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, dest, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_xdiff_string_rabdiff arginfo_xdiff_string_diff_binary
+#define arginfo_xdiff_file_diff_binary arginfo_xdiff_file_bdiff
 
-#define arginfo_xdiff_file_rabdiff arginfo_xdiff_file_diff_binary
+#define arginfo_xdiff_string_rabdiff arginfo_xdiff_string_bdiff
 
-#define arginfo_xdiff_file_bdiff_size arginfo_xdiff_file_diff_binary
+#define arginfo_xdiff_file_rabdiff arginfo_xdiff_file_bdiff
 
-#define arginfo_xdiff_string_bdiff_size arginfo_xdiff_file_diff_binary
+#define arginfo_xdiff_file_bdiff_size arginfo_xdiff_file_bdiff
+
+#define arginfo_xdiff_string_bdiff_size arginfo_xdiff_file_bdiff
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_file_patch, 0, 0, 3)
 	ZEND_ARG_TYPE_INFO(0, file, IS_STRING, 0)
@@ -49,16 +53,20 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_patch, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(1, error, IS_STRING, 0, "null")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_xdiff_file_patch_binary, 0, 3, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_xdiff_file_bpatch, 0, 3, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, file, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, patch, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, dest, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_patch_binary, 0, 0, 2)
+#define arginfo_xdiff_file_patch_binary arginfo_xdiff_file_bpatch
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_bpatch, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, str, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, patch, IS_STRING, 0)
 ZEND_END_ARG_INFO()
+
+#define arginfo_xdiff_string_patch_binary arginfo_xdiff_string_bpatch
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_file_merge3, 0, 0, 4)
 	ZEND_ARG_TYPE_INFO(0, file1, IS_STRING, 0)
@@ -94,7 +102,9 @@ ZEND_FUNCTION(xdiff_string_merge3);
 static const zend_function_entry ext_functions[] = {
 	ZEND_FE(xdiff_string_diff, arginfo_xdiff_string_diff)
 	ZEND_FE(xdiff_file_diff, arginfo_xdiff_file_diff)
+	ZEND_FE(xdiff_string_bdiff, arginfo_xdiff_string_bdiff)
 	ZEND_FALIAS(xdiff_string_diff_binary, xdiff_string_bdiff, arginfo_xdiff_string_diff_binary)
+	ZEND_FE(xdiff_file_bdiff, arginfo_xdiff_file_bdiff)
 	ZEND_FALIAS(xdiff_file_diff_binary, xdiff_file_bdiff, arginfo_xdiff_file_diff_binary)
 	ZEND_FE(xdiff_string_rabdiff, arginfo_xdiff_string_rabdiff)
 	ZEND_FE(xdiff_file_rabdiff, arginfo_xdiff_file_rabdiff)
@@ -102,7 +112,9 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(xdiff_string_bdiff_size, arginfo_xdiff_string_bdiff_size)
 	ZEND_FE(xdiff_file_patch, arginfo_xdiff_file_patch)
 	ZEND_FE(xdiff_string_patch, arginfo_xdiff_string_patch)
+	ZEND_FE(xdiff_file_bpatch, arginfo_xdiff_file_bpatch)
 	ZEND_FALIAS(xdiff_file_patch_binary, xdiff_file_bpatch, arginfo_xdiff_file_patch_binary)
+	ZEND_FE(xdiff_string_bpatch, arginfo_xdiff_string_bpatch)
 	ZEND_FALIAS(xdiff_string_patch_binary, xdiff_string_bpatch, arginfo_xdiff_string_patch_binary)
 	ZEND_FE(xdiff_file_merge3, arginfo_xdiff_file_merge3)
 	ZEND_FE(xdiff_string_merge3, arginfo_xdiff_string_merge3)
