@@ -94,6 +94,8 @@ ZEND_FUNCTION(xdiff_string_merge3);
 static const zend_function_entry ext_functions[] = {
 	ZEND_FE(xdiff_string_diff, arginfo_xdiff_string_diff)
 	ZEND_FE(xdiff_file_diff, arginfo_xdiff_file_diff)
+	ZEND_FE(xdiff_string_bdiff, arginfo_xdiff_string_diff_binary)
+	ZEND_FE(xdiff_file_bdiff, arginfo_xdiff_file_diff_binary)
 	ZEND_FALIAS(xdiff_string_diff_binary, xdiff_string_bdiff, arginfo_xdiff_string_diff_binary)
 	ZEND_FALIAS(xdiff_file_diff_binary, xdiff_file_bdiff, arginfo_xdiff_file_diff_binary)
 	ZEND_FE(xdiff_string_rabdiff, arginfo_xdiff_string_rabdiff)
@@ -102,6 +104,8 @@ static const zend_function_entry ext_functions[] = {
 	ZEND_FE(xdiff_string_bdiff_size, arginfo_xdiff_string_bdiff_size)
 	ZEND_FE(xdiff_file_patch, arginfo_xdiff_file_patch)
 	ZEND_FE(xdiff_string_patch, arginfo_xdiff_string_patch)
+	ZEND_FE(xdiff_file_bpatch, arginfo_xdiff_file_patch_binary)
+	ZEND_FE(xdiff_string_bpatch, arginfo_xdiff_string_patch_binary)
 	ZEND_FALIAS(xdiff_file_patch_binary, xdiff_file_bpatch, arginfo_xdiff_file_patch_binary)
 	ZEND_FALIAS(xdiff_string_patch_binary, xdiff_string_bpatch, arginfo_xdiff_string_patch_binary)
 	ZEND_FE(xdiff_file_merge3, arginfo_xdiff_file_merge3)
