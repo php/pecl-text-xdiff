@@ -508,6 +508,7 @@ PHP_FUNCTION(xdiff_string_patch)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
+        ZVAL_DEREF(error_ref);
 		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
@@ -678,6 +679,7 @@ PHP_FUNCTION(xdiff_string_merge3)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
+        ZVAL_DEREF(error_ref);
 		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
