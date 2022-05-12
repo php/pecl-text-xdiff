@@ -508,7 +508,7 @@ PHP_FUNCTION(xdiff_string_patch)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
-		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
+		ZEND_TRY_ASSIGN_REF_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
 	if (output_string.size > 0) {
@@ -678,7 +678,7 @@ PHP_FUNCTION(xdiff_string_merge3)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
-		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
+		ZEND_TRY_ASSIGN_REF_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
 	if (output_string.size > 0) {
