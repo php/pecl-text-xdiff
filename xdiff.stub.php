@@ -33,7 +33,7 @@ function xdiff_string_bdiff_size(string $file1, string $file2, string $dest): bo
 function xdiff_file_patch(string $file, string $patch, string $dest, int $flags=XDIFF_PATCH_NORMAL) {}
 
 /** @return string|bool */
-function xdiff_string_patch(string $file, string $patch, int $flags=XDIFF_PATCH_NORMAL, string &$error=null) {}
+function xdiff_string_patch(string $file, string $patch, int $flags=XDIFF_PATCH_NORMAL, ?string &$error=null) {}
 
 function xdiff_file_bpatch(string $file, string $patch, string $dest): bool {}
 
@@ -53,4 +53,4 @@ function xdiff_string_patch_binary(string $str, string $patch) {}
 function xdiff_file_merge3(string $file1, string $file2, string $file3, string $dest) {}
 
 /** @return string|bool */
-function xdiff_string_merge3(string $str1, string $str2, string $str3, string &$error=null) {}
+function xdiff_string_merge3(string $str1, string $str2, string $str3, ?string &$error=null) {}

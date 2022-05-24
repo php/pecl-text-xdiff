@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 90bf8c5e8be3dd1673bdadd36d5cebd846ff425d */
+ * Stub hash: 6d1a09b610c3c0db1d2f18b92330f5fae562ee3a */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_diff, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, str1, IS_STRING, 0)
@@ -50,7 +50,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_patch, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, file, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, patch, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "XDIFF_PATCH_NORMAL")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(1, error, IS_STRING, 0, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(1, error, IS_STRING, 1, "null")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_xdiff_file_bpatch, 0, 3, _IS_BOOL, 0)
@@ -79,7 +79,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_xdiff_string_merge3, 0, 0, 3)
 	ZEND_ARG_TYPE_INFO(0, str1, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, str2, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, str3, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(1, error, IS_STRING, 0, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(1, error, IS_STRING, 1, "null")
 ZEND_END_ARG_INFO()
 
 
