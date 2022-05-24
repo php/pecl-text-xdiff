@@ -81,6 +81,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <file name="bug81552.phpt" role="test" />
     <file name="context1.patch" role="test" />
     <file name="context5.patch" role="test" />
+    <file name="error-bpatch.phpt" role="test" />
+    <file name="error-patch.phpt" role="test" />
+    <file name="error-patch2.phpt" role="test" />
     <file name="file.1" role="test" />
     <file name="file.2" role="test" />
     <file name="file.bdiff" role="test" />
