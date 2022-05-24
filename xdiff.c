@@ -73,6 +73,7 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size);
 static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size);
 static int init_string(struct string_buffer *string);
 static void free_string(struct string_buffer *string);
+static void invalidate_string(struct string_buffer *string);
 
 static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal);
 static int make_diff_str(char *str1, int size1, char *str2, int size2,  xdemitcb_t *output, int context, int minimal);
@@ -804,6 +805,11 @@ static int init_string(struct string_buffer *string)
 	memset(string->ptr, 0, 1);
 
 	return 1;
+}
+
+static void invalidate_string(struct string_buffer *string)
+{
+	string->ptr = NULL;
 }
 
 static void free_string(struct string_buffer *string)
