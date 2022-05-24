@@ -52,7 +52,7 @@ function xdiff_file_patch(string $file, string $patch, string $dest, int $flags=
  * @param string $error
  * @return string|bool
  */
-function xdiff_string_patch(string $file, string $patch, int $flags=XDIFF_PATCH_NORMAL, ?string &$error=null) {}
+function xdiff_string_patch(string $file, string $patch, int $flags=XDIFF_PATCH_NORMAL, string &$error=null) {}
 
 /** @alias xdiff_file_bpatch */
 function xdiff_file_patch_binary(string $file, string $patch, string $dest): bool {}
@@ -81,4 +81,4 @@ function xdiff_file_merge3(string $file1, string $file2, string $file3, string $
  * @param string $error
  * @return string|bool
  */
-function xdiff_string_merge3(string $str1, string $str2, string $str3, ?string &$error=null) {}
+function xdiff_string_merge3(string $str1, string $str2, string $str3, string &$error=null) {}
