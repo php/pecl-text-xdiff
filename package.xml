@@ -26,9 +26,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2021-05-18</date>
+ <date>2022-05-24</date>
  <version>
-  <release>2.1.0</release>
+  <release>2.1.1</release>
   <api>2.1.0</api>
  </version>
  <stability>
@@ -37,8 +37,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- PHP 8 support
-- Drop PHP 5 support
+- Fixed bug #81552 xdiff_string_bpatch() and others missing (Kevin Israel)
+- Fixed bug #77826 xdiff_string_bpatch wrong return value on error (SATO Kentaro)
  </notes>
  <contents>
   <dir name="/">
@@ -116,7 +116,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <min>7.0.0</min>
    </php>
    <pearinstaller>
-    <min>1.4.0b1</min>
+    <min>1.10</min>
    </pearinstaller>
   </required>
  </dependencies>
@@ -125,6 +125,22 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <configureoption default="autodetect" name="with-xdiff" prompt="libxdiff library installation dir?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2021-05-18</date>
+   <version>
+    <release>2.1.0</release>
+    <api>2.1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+    - PHP 8 support
+    - Drop PHP 5 support
+   </notes>
+  </release>
   <release>
    <version>
     <release>2.0.1</release>

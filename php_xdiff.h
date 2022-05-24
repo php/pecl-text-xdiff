@@ -1,8 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | PHP Version 7                                                        |
-  +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2016 The PHP Group                                |
+  | Copyright (c) The PHP Group                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 3.1 of the PHP license,       |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -24,7 +22,7 @@
 extern zend_module_entry xdiff_module_entry;
 #define phpext_xdiff_ptr &xdiff_module_entry
 
-#define PHP_XDIFF_VERSION "2.1.1-dev"
+#define PHP_XDIFF_VERSION "2.1.1"
 
 #ifdef PHP_WIN32
 #define PHP_XDIFF_API __declspec(dllexport)
