@@ -82,17 +82,17 @@ static int init_string(struct string_buffer *string);
 static void free_string(struct string_buffer *string);
 
 static int make_diff(char *filepath1, char *filepath2, xdemitcb_t *output, int context, int minimal);
-static int make_diff_str(char *str1, int size1, char *str2, int size2,  xdemitcb_t *output, int context, int minimal);
+static int make_diff_str(char *str1, size_t size1, char *str2, size_t size2,  xdemitcb_t *output, int context, int minimal);
 static int make_bdiff(char *filepath1, char *filepath2, xdemitcb_t *output);
-static int make_bdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output);
+static int make_bdiff_str(char *str1, size_t size1, char *str2, size_t size2, xdemitcb_t *output);
 static int make_patch(char *file_path, char *patch_path, xdemitcb_t *output, xdemitcb_t *error, int flags);
-static int make_patch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output, xdemitcb_t *error, int flags);
+static int make_patch_str(char *file, size_t size1, char *patch, size_t size2, xdemitcb_t *output, xdemitcb_t *error, int flags);
 static int make_bpatch(char *file_path, char *patch_path, xdemitcb_t *output);
-static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output);
+static int make_bpatch_str(char *file, size_t size1, char *patch, size_t size2, xdemitcb_t *output);
 static int make_merge3(char *filepath1, char *filepath2, char *filepath3, xdemitcb_t *output, xdemitcb_t *error);
-static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error);
+static int make_merge3_str(char *content1, size_t size1, char *content2, size_t size2, char *content3, size_t size3, xdemitcb_t *output, xdemitcb_t *error);
 static int make_rabdiff(char *filepath1, char *filepath2, xdemitcb_t *output);
-static int make_rabdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output);
+static int make_rabdiff_str(char *str1, size_t size1, char *str2, size_t size2, xdemitcb_t *output);
 
 static void *xdiff_malloc(void *foo, unsigned int size)
 {
@@ -187,8 +187,13 @@ PHP_FUNCTION(xdiff_string_diff)
 	output.priv= &string;
 	output.outf = append_string;
 
-	make_diff_str(str1->val, str1->len, str2->val, str2->len, &output, context, minimal);
+	retval = make_diff_str(str1->val, str1->len, str2->val, str2->len, &output, context, minimal);
+	if (!retval)
+		goto out_free_string;
+
 	RETVAL_STRINGL(string.ptr, string.size);
+
+out_free_string:
 	free_string(&string);
 out:
 	return;
@@ -254,10 +259,14 @@ PHP_FUNCTION(xdiff_string_bdiff)
 	output.priv= &string;
 	output.outf = append_string;
 
-	make_bdiff_str(str1->val, str1->len, str2->val, str2->len, &output);
-	RETVAL_STRINGL(string.ptr, string.size);
-	free_string(&string);
+	retval = make_bdiff_str(str1->val, str1->len, str2->val, str2->len, &output);
+	if (!retval)
+		goto out_free_string;
 
+	RETVAL_STRINGL(string.ptr, string.size);
+
+out_free_string:
+	free_string(&string);
 out:
 	return;
 }
@@ -320,10 +329,14 @@ PHP_FUNCTION(xdiff_string_rabdiff)
 	output.priv= &string;
 	output.outf = append_string;
 
-	make_rabdiff_str(str1->val, str1->len, str2->val, str2->len, &output);
-	RETVAL_STRINGL(string.ptr, string.size);
-	free_string(&string);
+	retval = make_rabdiff_str(str1->val, str1->len, str2->val, str2->len, &output);
+	if (!retval)
+		goto out_free_string;
 
+	RETVAL_STRINGL(string.ptr, string.size);
+
+out_free_string:
+	free_string(&string);
 out:
 	return;
 }
@@ -557,7 +570,7 @@ PHP_FUNCTION(xdiff_file_bpatch)
 	retval = make_bpatch(src_path->val, patch_path->val, &output);
 	php_stream_close(output_stream);
 
-	if (retval == 0)
+	if (retval)
 		RETVAL_TRUE;
 
 out:
@@ -728,7 +741,9 @@ static int load_mm_file(const char *filepath, mmfile_t *dest)
 	if (!ptr)
 		goto out_free_mmfile;
 
-	php_stream_read(src, ptr, filesize);
+	if (php_stream_read(src, ptr, filesize) != filesize)
+		goto out_free_mmfile;
+
 	php_stream_close(src);
 
 	return 1;
@@ -773,6 +788,7 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 		new_ptr = erealloc(string->ptr, string->size + buffer[i].size + 1);
 		if (!new_ptr) {
 			efree(string->ptr);
+			string->ptr = NULL;
 			return -1;
 		}
 
@@ -849,7 +865,7 @@ out:
 	return result;
 }
 
-static int make_diff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output, int context, int minimal)
+static int make_diff_str(char *str1, size_t size1, char *str2, size_t size2, xdemitcb_t *output, int context, int minimal)
 {
 	mmfile_t file1, file2;
 	xpparam_t params;
@@ -911,7 +927,7 @@ out:
 	return result;
 }
 
-static int make_bdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output)
+static int make_bdiff_str(char *str1, size_t size1, char *str2, size_t size2, xdemitcb_t *output)
 {
 	mmfile_t file1, file2;
 	bdiffparam_t params;
@@ -968,7 +984,7 @@ out:
 	return result;
 }
 
-static int make_rabdiff_str(char *str1, int size1, char *str2, int size2, xdemitcb_t *output)
+static int make_rabdiff_str(char *str1, size_t size1, char *str2, size_t size2, xdemitcb_t *output)
 {
 	mmfile_t file1, file2;
 	int retval, result = 0;
@@ -1022,7 +1038,7 @@ out:
 	return result;
 }
 
-static int make_patch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output, xdemitcb_t *error, int flags)
+static int make_patch_str(char *file, size_t size1, char *patch, size_t size2, xdemitcb_t *output, xdemitcb_t *error, int flags)
 {
 	mmfile_t file_mm, patch_mm;
 	int retval, result = 0;
@@ -1076,7 +1092,7 @@ out:
 	return result;
 }
 
-static int make_bpatch_str(char *file, int size1, char *patch, int size2, xdemitcb_t *output)
+static int make_bpatch_str(char *file, size_t size1, char *patch, size_t size2, xdemitcb_t *output)
 {
 	mmfile_t file_mm, patch_mm;
 	int retval, result = 0;
@@ -1136,7 +1152,7 @@ out:
 	return result;
 }
 
-static int make_merge3_str(char *content1, int size1, char *content2, int size2, char *content3, int size3, xdemitcb_t *output, xdemitcb_t *error)
+static int make_merge3_str(char *content1, size_t size1, char *content2, size_t size2, char *content3, size_t size3, xdemitcb_t *output, xdemitcb_t *error)
 {
 	mmfile_t file1, file2, file3;
 	int retval, result = 0;
