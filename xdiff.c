@@ -71,11 +71,11 @@ extern char libxdiff_version[];
 
 struct string_buffer {
 	char *ptr;
-	unsigned long size;
+	size_t size;
 };
 
 static int load_mm_file(const char *filepath, mmfile_t *dest);
-static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *dest);
+static int load_into_mm_file(const char *buffer, size_t size, mmfile_t *dest);
 static int append_string(void *ptr, mmbuffer_t *buffer, int array_size);
 static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size);
 static int init_string(struct string_buffer *string);
@@ -732,8 +732,10 @@ static int load_mm_file(const char *filepath, mmfile_t *dest)
 		goto out_stream_close;
 
 	filesize = stat.sb.st_size;
+	if (filesize < 0 || filesize > LONG_MAX)
+		goto out_stream_close;
 
-	retval = xdl_init_mmfile(dest, filesize, XDL_MMF_ATOMIC);
+	retval = xdl_init_mmfile(dest, (long) filesize, XDL_MMF_ATOMIC);
 	if (retval < 0)
 		goto out_stream_close;
 
@@ -756,12 +758,15 @@ out:
 	return 0;
 }
 
-static int load_into_mm_file(const char *buffer, unsigned long size, mmfile_t *dest)
+static int load_into_mm_file(const char *buffer, size_t size, mmfile_t *dest)
 {
 	int retval;
 	void *ptr;
 
-	retval = xdl_init_mmfile(dest, size, XDL_MMF_ATOMIC);
+	if (size > LONG_MAX)
+		goto out;
+
+	retval = xdl_init_mmfile(dest, (long) size, XDL_MMF_ATOMIC);
 	if (retval < 0)
 		goto out;
 
