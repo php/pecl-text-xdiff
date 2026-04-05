@@ -57,6 +57,15 @@
 # pragma pack(pop)
 #endif
 
+#ifndef ZEND_TRY_ASSIGN_REF_STRINGL
+#define ZEND_TRY_ASSIGN_REF_STRINGL(zv, s, l)  do { \
+	zval *_zv = (zv); \
+	ZVAL_DEREF(_zv); \
+	zval_ptr_dtor(_zv); \
+	ZVAL_STRINGL(_zv, (s), (l)); \
+} while (0)
+#endif
+
 /* Not exported by header file */
 extern char libxdiff_version[];
 
@@ -505,8 +514,7 @@ PHP_FUNCTION(xdiff_string_patch)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
-		ZVAL_DEREF(error_ref);
-		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
+		ZEND_TRY_ASSIGN_REF_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
 	if (output_string.size > 0) {
@@ -676,8 +684,7 @@ PHP_FUNCTION(xdiff_string_merge3)
 		goto out_free_error_string;
 
 	if (error_string.size > 0 && error_ref) {
-		ZVAL_DEREF(error_ref);
-		ZVAL_STRINGL(error_ref, error_string.ptr, error_string.size);
+		ZEND_TRY_ASSIGN_REF_STRINGL(error_ref, error_string.ptr, error_string.size);
 	}
 
 	if (output_string.size > 0) {
