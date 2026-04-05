@@ -787,9 +787,17 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 {
 	struct string_buffer *string = ptr;
 	void *new_ptr;
-	unsigned int i;
+	int i;
+
+	if (array_size <= 0)
+		return 0;
 
 	for (i = 0; i < array_size; i++) {
+		if (buffer[i].size < 0 || (size_t) buffer[i].size > SIZE_MAX - string->size - 1) {
+			efree(string->ptr);
+			string->ptr = NULL;
+			return -1;
+		}
 		new_ptr = erealloc(string->ptr, string->size + buffer[i].size + 1);
 		if (!new_ptr) {
 			efree(string->ptr);
@@ -801,9 +809,7 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 		memcpy(string->ptr + string->size, buffer[i].ptr, buffer[i].size);
 		string->size += buffer[i].size;
 	}
-	if (array_size) {
-		string->ptr[string->size] = '\0';
-	}
+	string->ptr[string->size] = '\0';
 
 	return 0;
 }
@@ -811,7 +817,10 @@ static int append_string(void *ptr, mmbuffer_t *buffer, int array_size)
 static int append_stream(void *ptr, mmbuffer_t *buffer, int array_size)
 {
 	php_stream *stream = ptr;
-	unsigned int i;
+	int i;
+
+	if (array_size <= 0)
+		return 1;
 
 	for (i = 0; i < array_size; i++) {
 		php_stream_write(stream, buffer[i].ptr, buffer[i].size);
