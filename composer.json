@@ -1,0 +1,19 @@
+{
+    "name": "pecl/xdiff",
+    "type": "php-ext",
+    "license": "PHP-3.01",
+    "description": "File differences/patches.",
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "php-ext": {
+        "extension-name": "xdiff",
+        "configure-options": [
+            {
+                "name": "with-xdiff",
+                "description": "libxdiff library installation dir",
+                "needs-value": false
+            }
+        ]
+    }
+}

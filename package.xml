@@ -26,10 +26,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>remi@php.net</email>
   <active>yes</active>
  </lead>
- <date>2022-05-24</date>
+ <date>2026-04-06</date>
  <version>
-  <release>2.1.1</release>
-  <api>2.1.0</api>
+  <release>2.2.0</release>
+  <api>2.2.0</api>
  </version>
  <stability>
   <release>stable</release>
@@ -37,8 +37,14 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="http://www.php.net/license">PHP License</license>
  <notes>
-- Fixed bug #81552 xdiff_string_bpatch() and others missing (Kevin Israel)
-- Fixed bug #77826 xdiff_string_bpatch wrong return value on error (SATO Kentaro)
+- Fixed memory leak when $error parameter is refcounted in patch/merge functions
+- Fixed inverted return value in xdiff_file_bpatch() (returned true on failure)
+- Fixed missing error checks in xdiff_string_diff/bdiff/rabdiff()
+- Fixed potential double-free and size overflow in append_string()
+- Fixed unchecked php_stream_read() return in load_mm_file()
+- Fixed size truncation: use size_t consistently, add LONG_MAX bounds checks
+- Fixed signed/unsigned mismatches in callback functions
+- Added PIE support (composer.json)
  </notes>
  <contents>
   <dir name="/">
@@ -84,6 +90,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <file name="error-bpatch.phpt" role="test" />
     <file name="error-patch.phpt" role="test" />
     <file name="error-patch2.phpt" role="test" />
+    <file name="file_bpatch_retval.phpt" role="test" />
     <file name="file.1" role="test" />
     <file name="file.2" role="test" />
     <file name="file.bdiff" role="test" />
@@ -108,6 +115,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
    <file name="README.API" role="doc" />
    <file name="xdiff.c" role="src" />
    <file name="xdiff_arginfo.h" role="src" />
+   <file name="xdiff.stub.php" role="src" />
+   <file name="composer.json" role="src" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -125,6 +134,22 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <configureoption default="autodetect" name="with-xdiff" prompt="libxdiff library installation dir?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2022-05-24</date>
+   <version>
+    <release>2.1.1</release>
+    <api>2.1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+- Fixed bug #81552 xdiff_string_bpatch() and others missing (Kevin Israel)
+- Fixed bug #77826 xdiff_string_bpatch wrong return value on error (SATO Kentaro)
+   </notes>
+  </release>
   <release>
    <date>2021-05-18</date>
    <version>
