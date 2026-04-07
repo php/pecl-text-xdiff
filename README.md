@@ -31,94 +31,94 @@ make install
 
 ### Diff
 
-```php
-function xdiff_string_diff(string $str1, string $str2, int $context = 3, bool $minimal = false): string|false {}
+```csharp
+xdiff_string_diff(string $str1, string $str2, int $context = 3, bool $minimal = false): string|false
 ```
 
 Creates a unified diff of two strings. `$context` sets the number of surrounding lines. `$minimal` reduces diff size at the cost of speed.
 
-```php
-function xdiff_file_diff(string $file1, string $file2, string $dest, int $context = 3, bool $minimal = false): bool {}
+```csharp
+xdiff_file_diff(string $file1, string $file2, string $dest, int $context = 3, bool $minimal = false): bool
 ```
 
 Creates a unified diff of two files and writes the result to `$dest`.
 
-```php
-function xdiff_string_diff_binary(string $str1, string $str2): string|false {}
+```csharp
+xdiff_string_diff_binary(string $str1, string $str2): string|false
 ```
 
 Creates a binary diff of two strings.
 
-```php
-function xdiff_file_diff_binary(string $file1, string $file2, string $dest): bool {}
+```csharp
+xdiff_file_diff_binary(string $file1, string $file2, string $dest): bool
 ```
 
 Creates a binary diff of two files and writes the result to `$dest`.
 
-```php
-function xdiff_string_rabdiff(string $str1, string $str2): string|false {}
+```csharp
+xdiff_string_rabdiff(string $str1, string $str2): string|false
 ```
 
 Creates a binary diff of two strings using the Rabin fingerprint algorithm.
 
-```php
-function xdiff_file_rabdiff(string $file1, string $file2, string $dest): bool {}
+```csharp
+xdiff_file_rabdiff(string $file1, string $file2, string $dest): bool
 ```
 
 Creates a binary diff of two files using the Rabin fingerprint algorithm and writes the result to `$dest`.
 
 ### Patch
 
-```php
-function xdiff_string_patch(string $file, string $patch, int $flags = XDIFF_PATCH_NORMAL, ?string &$error = null): string|bool {}
+```csharp
+xdiff_string_patch(string $file, string $patch, int $flags = XDIFF_PATCH_NORMAL, ?string &$error = null): string|bool
 ```
 
 Applies a unified patch to a string. Returns the patched string, or `false` on error. Rejected chunks are returned via `$error`.
 
 `$flags`: `XDIFF_PATCH_NORMAL` (default) or `XDIFF_PATCH_REVERSE`.
 
-```php
-function xdiff_file_patch(string $file, string $patch, string $dest, int $flags = XDIFF_PATCH_NORMAL): string|bool {}
+```csharp
+xdiff_file_patch(string $file, string $patch, string $dest, int $flags = XDIFF_PATCH_NORMAL): string|bool
 ```
 
 Applies a unified patch from a file. Returns `true` on success, a string of rejected chunks on partial failure, or `false` on error.
 
-```php
-function xdiff_string_patch_binary(string $str, string $patch): string|false {}
+```csharp
+xdiff_string_patch_binary(string $str, string $patch): string|false
 ```
 
 Applies a binary patch to a string. Works with both bdiff and rabdiff patches.
 
-```php
-function xdiff_file_patch_binary(string $file, string $patch, string $dest): bool {}
+```csharp
+xdiff_file_patch_binary(string $file, string $patch, string $dest): bool
 ```
 
 Applies a binary patch from a file and writes the result to `$dest`.
 
 ### Merge
 
-```php
-function xdiff_string_merge3(string $str1, string $str2, string $str3, ?string &$error = null): string|bool {}
+```csharp
+xdiff_string_merge3(string $str1, string $str2, string $str3, ?string &$error = null): string|bool
 ```
 
 Three-way merge of strings. Returns the merged string, or `false` on error. Conflicts are returned via `$error`.
 
-```php
-function xdiff_file_merge3(string $file1, string $file2, string $file3, string $dest): string|bool {}
+```csharp
+xdiff_file_merge3(string $file1, string $file2, string $file3, string $dest): string|bool
 ```
 
 Three-way merge of files. Returns `true` on success, a string of rejected chunks on conflict, or `false` on error.
 
 ### Binary diff size
 
-```php
-function xdiff_string_bdiff_size(string $patch): int|false {}
+```csharp
+xdiff_string_bdiff_size(string $patch): int|false
 ```
 
 Returns the size of the file that would be created by applying the given binary patch.
 
-```php
-function xdiff_file_bdiff_size(string $patch_file): int|false {}
+```csharp
+xdiff_file_bdiff_size(string $patch_file): int|false
 ```
 
 Same as above, but reads the patch from a file.
